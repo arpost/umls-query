@@ -1,39 +1,34 @@
 package edu.emory.cci.aiw.umls;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public final class TermUID extends AbstractUMLSSearchUID {
 
-	private char tui1;
-	private char tui2;
-	private char tui3;
-	private char tui4;
-	
-	private TermUID(char tui1, char tui2, char tui3, char tui4) {
-		super(new String(new char[]{tui1, tui2, tui3, tui4}));
-		this.tui1 = tui1;
-		this.tui2 = tui2;
-		this.tui3 = tui3;
-		this.tui4 = tui4;
+	private static Pattern tuidPattern;
+
+	static {
+		tuidPattern = Pattern.compile("T\\d{3}");
 	}
-		
+
+	private TermUID(String tui) {
+		super(tui);
+	}
+
 	@Override
 	public String getKeyName() {
-		// TODO Auto-generated method stub
 		return "TUI";
 	}
 
-	public static TermUID fromChars(char tui1, char tui2,
-									char tui3, char tui4) {
-		return new TermUID(tui1, tui2, tui3, tui4);
-	}
-	
-	public static TermUID fromString(String tui) 
-		throws MalformedUMLSUniqueIdentifierException {
-		if (tui.length() != 4) {
-			throw new MalformedUMLSUniqueIdentifierException(
-					"TUIs must consist of exactly 4 characters");
+	public static TermUID fromString(String tui)
+	        throws MalformedUMLSUniqueIdentifierException {
+		Matcher m = tuidPattern.matcher(tui);
+		if (m.matches()) {
+			return new TermUID(tui);
 		} else {
-			return fromChars(tui.charAt(0), tui.charAt(1), tui.charAt(2),
-								tui.charAt(3));
+			throw new MalformedUMLSUniqueIdentifierException(
+			        "Term Unique Identifiers must consist of the letter 'T' "
+			                + "followed by 3 digits");
 		}
 	}
 }

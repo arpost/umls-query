@@ -3,7 +3,9 @@ package edu.emory.cci.aiw.umls;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class LexicalUID extends AbstractUMLSSearchUID {
+public final class LexicalUID extends AbstractUMLSSearchUID implements
+        CUIQuerySearchUID, AUIQuerySearchUID, STRQuerySearchUID,
+        TUIQuerySearchUID, SABQuerySearchUID, MapToIdQuerySearchUID {
 	private static Pattern luidPattern;
 
 	static {
@@ -14,17 +16,18 @@ public final class LexicalUID extends AbstractUMLSSearchUID {
 		super(luid);
 	}
 
-	public static LexicalUID fromString(String luid) throws MalformedUMLSUniqueIdentifierException {
+	public static LexicalUID fromString(String luid)
+	        throws MalformedUMLSUniqueIdentifierException {
 		Matcher m = luidPattern.matcher(luid);
 		if (m.matches()) {
 			return new LexicalUID(luid);
 		} else {
 			throw new MalformedUMLSUniqueIdentifierException(
-			"Concept Unique Identifiers must consist of the letter 'L' " +
-			"followed by 7 digits");
+			        "Concept Unique Identifiers must consist of the letter 'L' "
+			                + "followed by 7 digits");
 		}
 	}
-	
+
 	public String getKeyName() {
 		return "LUI";
 	}
@@ -36,7 +39,7 @@ public final class LexicalUID extends AbstractUMLSSearchUID {
 		testLUID("L123456");
 		testLUID("L");
 	}
-	
+
 	private static void testLUID(String luid) {
 		System.out.print(luid + ": ");
 		try {

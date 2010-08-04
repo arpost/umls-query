@@ -12,4 +12,8 @@ public abstract class AbstractUMLSSearchUID implements UMLSQuerySearchUID {
 	public String getValue() {
 		return id;
 	}
+	
+	public String toString() {
+		return id;
+	}
 }

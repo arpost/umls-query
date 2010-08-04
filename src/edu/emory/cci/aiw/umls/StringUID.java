@@ -3,32 +3,35 @@ package edu.emory.cci.aiw.umls;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class StringUID extends AbstractUMLSSearchUID implements CUIQuerySearchUID {
+public final class StringUID extends AbstractUMLSSearchUID implements
+        CUIQuerySearchUID, AUIQuerySearchUID, STRQuerySearchUID,
+        TUIQuerySearchUID, SABQuerySearchUID, MapToIdQuerySearchUID {
 	private static Pattern suidPattern;
-	
+
 	static {
-		suidPattern = Pattern.compile("C\\d{7}");
+		suidPattern = Pattern.compile("S\\d{7}");
 	}
-	
+
 	private StringUID(String suid) {
 		super(suid);
 	}
-	
-	public static StringUID fromString(String suid) throws MalformedUMLSUniqueIdentifierException {
+
+	public static StringUID fromString(String suid)
+	        throws MalformedUMLSUniqueIdentifierException {
 		Matcher m = suidPattern.matcher(suid);
 		if (m.matches()) {
 			return new StringUID(suid);
 		} else {
 			throw new MalformedUMLSUniqueIdentifierException(
-					"Concept Unique Identifiers must consist of the letter 'S' " +
-					"followed by 7 digits");
+			        "String Unique Identifiers must consist of the letter 'S' "
+			                + "followed by 7 digits: " + suid);
 		}
 	}
-	
+
 	public String getKeyName() {
 		return "SUI";
 	}
-	
+
 	public static void main(String[] args) {
 		testSUID("C1234567");
 		testSUID("L1234567");
@@ -36,7 +39,7 @@ public final class StringUID extends AbstractUMLSSearchUID implements CUIQuerySe
 		testSUID("C123456");
 		testSUID("C");
 	}
-	
+
 	private static void testSUID(String suid) {
 		System.out.print(suid + ": ");
 		try {
