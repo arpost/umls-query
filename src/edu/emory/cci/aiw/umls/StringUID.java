@@ -8,6 +8,8 @@ public final class StringUID extends AbstractUMLSSearchUID implements
         TUIQuerySearchUID, SABQuerySearchUID, MapToIdQuerySearchUID {
 	private static Pattern suidPattern;
 
+	static final StringUID EMPTY_SUI = new StringUID("");
+	
 	static {
 		suidPattern = Pattern.compile("S\\d{7}");
 	}

@@ -13,19 +13,19 @@ public interface UMLSQueryExecutor {
 	public List<ConceptUID> getCUI(CUIQuerySearchUID uid, List<SABValue> sabs,
 	        boolean caseSensitive);
 
-	public Map<String, List<ConceptUID>> getCUIMultByCUI(List<ConceptUID> cuis,
+	public Map<ConceptUID, List<ConceptUID>> getCUIMultByCUI(
+	        List<ConceptUID> cuis, List<SABValue> sabs, boolean caseSensitive);
+
+	public Map<AtomUID, List<ConceptUID>> getCUIMultByAUI(List<AtomUID> auis,
 	        List<SABValue> sabs, boolean caseSensitive);
 
-	public Map<String, List<ConceptUID>> getCUIMultByAUI(List<AtomUID> auis,
-	        List<SABValue> sabs, boolean caseSensitive);
+	public Map<LexicalUID, List<ConceptUID>> getCUIMultByLUI(
+	        List<LexicalUID> luis, List<SABValue> sabs, boolean caseSensitive);
 
-	public Map<String, List<ConceptUID>> getCUIMultByLUI(List<LexicalUID> luis,
-	        List<SABValue> sabs, boolean caseSensitive);
+	public Map<StringUID, List<ConceptUID>> getCUIMultBySUI(
+	        List<StringUID> suis, List<SABValue> sabs, boolean caseSensitive);
 
-	public Map<String, List<ConceptUID>> getCUIMultBySUI(List<StringUID> suis,
-	        List<SABValue> sabs, boolean caseSensitive);
-
-	public Map<String, List<ConceptUID>> getCUIMultByString(
+	public Map<UMLSQueryStringValue, List<ConceptUID>> getCUIMultByString(
 	        List<UMLSQueryStringValue> strings, List<SABValue> sabs,
 	        boolean caseSensitive);
 
@@ -38,17 +38,26 @@ public interface UMLSQueryExecutor {
 
 	public List<SABValue> getSAB(SABQuerySearchUID uid);
 
-	public Map<String, List<UMLSQuerySearchUID>> mapToId(String phrase,
-	        UMLSIdType idType, List<SABValue> sab);
+	public Map<String, MapToIdResult<ConceptUID>> mapToCUI(String phrase,
+	        List<SABValue> sab);
 
-	// public void getParents(ParentsQuerySearchUID uid, String rela,
-	// SABValue sab);
-	//	
-	// public Map<String, String> getParentsMultByCUI(List<ConceptUID> cuis,
-	// String rela, SABValue sab);
-	//	
-	// public Map<String, String> getParentsMultByAUI(List<AtomUID> auis,
-	// String rela, SABValue sab);
+	public Map<String, MapToIdResult<AtomUID>> mapToAUI(String phrase,
+	        List<SABValue> sab);
+
+	public Map<String, MapToIdResult<LexicalUID>> mapToLUI(String phrase,
+	        List<SABValue> sab);
+
+	public Map<String, MapToIdResult<StringUID>> mapToSUI(String phrase,
+	        List<SABValue> sab);
+
+	public Map<List<AtomUID>, AtomUID> getParents(ParentsQuerySearchUID uid,
+	        String rela, SABValue sab);
+
+	public Map<ConceptUID, Map<List<AtomUID>, AtomUID>> getParentsMultByCUI(
+	        List<ConceptUID> cuis, String rela, SABValue sab);
+
+	public Map<AtomUID, Map<List<AtomUID>, AtomUID>> getParentsMultByAUI(
+	        List<AtomUID> auis, String rela, SABValue sab);
 	//	
 	// public void getCommonParents(ConceptUID cui1, ConceptUID cui2,
 	// String rela, SABValue sab);

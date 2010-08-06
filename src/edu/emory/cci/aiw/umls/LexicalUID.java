@@ -8,6 +8,8 @@ public final class LexicalUID extends AbstractUMLSSearchUID implements
         TUIQuerySearchUID, SABQuerySearchUID, MapToIdQuerySearchUID {
 	private static Pattern luidPattern;
 
+	static final LexicalUID EMPTY_LUI = new LexicalUID("");
+	
 	static {
 		luidPattern = Pattern.compile("L\\d{7}");
 	}

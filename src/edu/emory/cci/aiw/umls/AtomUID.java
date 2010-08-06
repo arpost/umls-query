@@ -10,6 +10,8 @@ public final class AtomUID extends AbstractUMLSSearchUID implements
 	
 	private static Pattern auidPattern;
 
+	static final AtomUID EMPTY_AUI = new AtomUID("");
+	
 	static {
 		auidPattern = Pattern.compile("A\\d{7}");
 	}

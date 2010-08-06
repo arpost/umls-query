@@ -3,12 +3,14 @@ package edu.emory.cci.aiw.umls;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ConceptUID extends AbstractUMLSSearchUID implements
+public final class ConceptUID extends AbstractUMLSSearchUID implements 
         CUIQuerySearchUID, AUIQuerySearchUID, STRQuerySearchUID,
         TUIQuerySearchUID, SABQuerySearchUID, ParentsQuerySearchUID,
         NeighborQuerySearchUID, MapToIdQuerySearchUID {
 
 	private static Pattern cuidPattern;
+
+	static final ConceptUID EMPTY_CUI = new ConceptUID("");
 
 	static {
 		cuidPattern = Pattern.compile("C\\d{7}");
@@ -26,7 +28,7 @@ public final class ConceptUID extends AbstractUMLSSearchUID implements
 		} else {
 			throw new MalformedUMLSUniqueIdentifierException(
 			        "Concept Unique Identifiers must consist of the letter 'C' "
-			                + "followed by 7 digits");
+			                + "followed by 7 digits: " + cuid);
 		}
 	}
 
