@@ -50,36 +50,32 @@ public interface UMLSQueryExecutor {
 	public Map<String, MapToIdResult<StringUID>> mapToSUI(String phrase,
 	        List<SABValue> sab);
 
-	public Map<List<AtomUID>, AtomUID> getParents(ParentsQuerySearchUID uid,
+	public Map<PTR, AtomUID> getParents(ParentsQuerySearchUID uid,
 	        String rela, SABValue sab);
 
-	public Map<ConceptUID, Map<List<AtomUID>, AtomUID>> getParentsMultByCUI(
+	public Map<ConceptUID, Map<PTR, AtomUID>> getParentsMultByCUI(
 	        List<ConceptUID> cuis, String rela, SABValue sab);
 
-	public Map<AtomUID, Map<List<AtomUID>, AtomUID>> getParentsMultByAUI(
+	public Map<AtomUID, Map<PTR, AtomUID>> getParentsMultByAUI(
 	        List<AtomUID> auis, String rela, SABValue sab);
-	//	
-	// public void getCommonParents(ConceptUID cui1, ConceptUID cui2,
-	// String rela, SABValue sab);
-	//	
-	// public void getCommonParents(AtomUID aui1, AtomUID aui2,
-	// String rela, SABValue sab);
-	//	
-	// public void getChildren(ConceptUID cui, String rela, SABValue sab);
-	//	
-	// public void getChilrdren(AtomUID aui, String rela, SABValue sab);
-	//	
-	// public void getCommonChild(ConceptUID cui1, ConceptUID cui2,
-	// String rela, SABValue sab);
-	//	
-	// public void getCommonChild(AtomUID aui1, AtomUID aui2,
-	// String rela, SABValue sab);
-	//	
-	// public Map<SABValue, String> getAvailableSAB(String description);
-	//	
-	// public int getDistBF(ConceptUID cui1, ConceptUID cui2);
-	//	
-	// public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
-	// String rela, SABValue sab,
-	// String rel);
+
+	public <T extends ParentsQuerySearchUID> CommonParent<T> getCommonParent(
+	        T uid1, T uid2, String rela, SABValue sab);
+
+	public List<ConceptUID> getChildren(ConceptUID cui, String rela, SABValue sab);
+
+	public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab);
+		
+	public ConceptUID getCommonChild(ConceptUID cui1, ConceptUID cui2,
+			String rela, SABValue sab);
+
+	public AtomUID getCommonChild(AtomUID aui1, AtomUID aui2,
+			String rela, SABValue sab);
+
+	public Map<SABValue, String> getAvailableSAB(String description);
+		
+	public int getDistBF(ConceptUID cui1, ConceptUID cui2, String rela, SABValue sab, int maxR);
+	 
+	public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
+	        String rela, SABValue sab, String rel);
 }

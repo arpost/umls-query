@@ -12,6 +12,13 @@ public class UMLSQueryStringValue extends AbstractUMLSSearchUID implements
 		return "STR";
 	}
 
+	public boolean equals(Object o) {
+		if (o instanceof UMLSQueryStringValue) {
+			return this.getValue().equals(((UMLSQueryStringValue) o).getValue());
+		}
+		return false;
+	}
+	
 	public static UMLSQueryStringValue fromString(String str) {
 		return new UMLSQueryStringValue(str);
 	}

@@ -21,6 +21,13 @@ public final class LATValue extends AbstractUMLSSearchUID {
 		return "LAT";
 	}
 
+	public boolean equals(Object o) {
+		if (o instanceof LATValue) {
+			return this.getValue().equals(((LATValue) o).getValue());
+		}
+		return false;
+	}
+	
 	public static LATValue fromString(String latStr)
 	        throws MalformedUMLSUniqueIdentifierException {
 		if (latStr.length() != 3) {

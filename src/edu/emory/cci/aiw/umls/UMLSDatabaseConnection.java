@@ -6,10 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 import org.arp.javautil.arrays.Arrays;
 
@@ -778,9 +783,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	 * edu.emory.cci.aiw.umls.SABValue)
 	 */
 	@Override
-	public Map<List<AtomUID>, AtomUID> getParents(ParentsQuerySearchUID uid,
-	        String rela, SABValue sab) {
-		Map<List<AtomUID>, AtomUID> result = new HashMap<List<AtomUID>, AtomUID>();
+	public Map<PTR, AtomUID> getParents(ParentsQuerySearchUID uid, String rela,
+	        SABValue sab) {
+		Map<PTR, AtomUID> result = new HashMap<PTR, AtomUID>();
 		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
 		StringBuilder sql = new StringBuilder(
@@ -800,9 +805,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		try {
 			ResultSet rs = substParams(sql.toString(), params).executeQuery();
 			while (rs.next()) {
-				String auiPath = rs.getString(1);
+				PTR ptr = new PTR(rs.getString(1));
 				AtomUID aui = AtomUID.fromString(rs.getString(2));
-				result.put(auiPathAsList(auiPath), aui);
+				result.put(ptr, aui);
 			}
 			return result;
 		} catch (SQLException sqle) {
@@ -822,10 +827,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	 * .List, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
 	 */
 	@Override
-	public Map<AtomUID, Map<List<AtomUID>, AtomUID>> getParentsMultByAUI(
+	public Map<AtomUID, Map<PTR, AtomUID>> getParentsMultByAUI(
 	        List<AtomUID> auis, String rela, SABValue sab) {
 
-		Map<AtomUID, Map<List<AtomUID>, AtomUID>> result = new HashMap<AtomUID, Map<List<AtomUID>, AtomUID>>();
+		Map<AtomUID, Map<PTR, AtomUID>> result = new HashMap<AtomUID, Map<PTR, AtomUID>>();
 		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 		StringBuilder sql = new StringBuilder("select distinct(PTR), PAUI, ");
 		sql.append(auis.get(0).getKeyName());
@@ -845,11 +850,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		try {
 			ResultSet rs = substParams(sql.toString(), params).executeQuery();
 			while (rs.next()) {
-				String auiPath = rs.getString(1);
+				PTR ptr = new PTR(rs.getString(1));
 				AtomUID paui = AtomUID.fromString(rs.getString(2));
 				AtomUID byAui = AtomUID.fromString(rs.getString(3));
-				result.put(byAui, new HashMap<List<AtomUID>, AtomUID>());
-				result.get(byAui).put(auiPathAsList(auiPath), paui);
+				result.put(byAui, new HashMap<PTR, AtomUID>());
+				result.get(byAui).put(ptr, paui);
 			}
 			return result;
 		} catch (SQLException sqle) {
@@ -869,10 +874,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	 * .List, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
 	 */
 	@Override
-	public Map<ConceptUID, Map<List<AtomUID>, AtomUID>> getParentsMultByCUI(
+	public Map<ConceptUID, Map<PTR, AtomUID>> getParentsMultByCUI(
 	        List<ConceptUID> cuis, String rela, SABValue sab) {
-		
-		Map<ConceptUID, Map<List<AtomUID>, AtomUID>> result = new HashMap<ConceptUID, Map<List<AtomUID>, AtomUID>>();
+
+		Map<ConceptUID, Map<PTR, AtomUID>> result = new HashMap<ConceptUID, Map<PTR, AtomUID>>();
 		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 		StringBuilder sql = new StringBuilder("select distinct(PTR), PAUI, ");
 		sql.append(cuis.get(0).getKeyName());
@@ -892,11 +897,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		try {
 			ResultSet rs = substParams(sql.toString(), params).executeQuery();
 			while (rs.next()) {
-				String auiPath = rs.getString(1);
+				PTR ptr = new PTR(rs.getString(1));
 				AtomUID paui = AtomUID.fromString(rs.getString(2));
 				ConceptUID byCui = ConceptUID.fromString(rs.getString(3));
-				result.put(byCui, new HashMap<List<AtomUID>, AtomUID>());
-				result.get(byCui).put(auiPathAsList(auiPath), paui);
+				result.put(byCui, new HashMap<PTR, AtomUID>());
+				result.get(byCui).put(ptr, paui);
 			}
 			return result;
 		} catch (SQLException sqle) {
@@ -904,18 +909,358 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		} catch (MalformedUMLSUniqueIdentifierException muuie) {
 			muuie.printStackTrace();
 		}
-		
+
 		return null;
 	}
 
-	private List<AtomUID> auiPathAsList(String auiPath)
-	        throws MalformedUMLSUniqueIdentifierException {
-		List<AtomUID> auis = new ArrayList<AtomUID>();
+	private static class ParentListComparator implements Comparator<PTR> {
 
-		for (String s : auiPath.split("\\.")) {
-			auis.add(AtomUID.fromString(s));
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+		 */
+		@Override
+		public int compare(PTR o1, PTR o2) {
+			Comparator<AtomUID> c = new UMLSUIDComparator<AtomUID>();
+			return o1.compareTo(o2);
 		}
-		return auis;
+
+	}
+
+	public <T extends ParentsQuerySearchUID> CommonParent<T> getCommonParent(
+	        T uid1, T uid2, String rela, SABValue sab) {
+		Comparator<PTR> c = new ParentListComparator();
+
+		List<PTR> aui1Parents = new ArrayList<PTR>();
+		aui1Parents.addAll(getParents(uid1, rela, sab).keySet());
+		Collections.sort(aui1Parents, c);
+
+		List<PTR> aui2Parents = new ArrayList<PTR>();
+		aui2Parents.addAll(getParents(uid2, rela, sab).keySet());
+		Collections.sort(aui2Parents, c);
+
+		// int min = aui1Parents.size() < aui2Parents.size() ?
+		// aui1Parents.size()
+		// : aui2Parents.size();
+		// for (int i = 0; i < min; i++) {
+		// System.out.println("K1: " + aui1Parents.get(i));
+		// System.out.println("K2: " + aui2Parents.get(i));
+		// }
+
+		for (PTR p : aui1Parents) {
+			for (PTR k : aui2Parents) {
+				for (int i = p.asList().size() - 1; i >= 0; i--) {
+					for (int j = k.asList().size() - 1; j >= 0; j--) {
+						if (p.asList().get(i).equals(k.asList().get(j))) {
+							return new CommonParent<T>(p.asList().get(i), uid1,
+							        uid2, p.asList().size() - i - 1, k.asList()
+							                .size()
+							                - j - 1);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getChildren(edu.emory.cci.aiw
+	 * .umls.ConceptUID, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
+	 */
+	@Override
+	public List<ConceptUID> getChildren(ConceptUID cui, String rela,
+	        SABValue sab) {
+		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+		StringBuilder sql = new StringBuilder(
+		        "select distinct(m2.CUI) from MRHIER, MRCONSO as m1, MRCONSO as m2 where MRHIER.PAUI = m1.AUI and m1.CUI = ?");
+		params.add(cui);
+		sql.append(" and MRHIER.AUI = m2.AUI");
+		if (sab != null) {
+			sql.append(" and MRHIER.SAB = ?");
+			params.add(sab);
+		}
+		if (rela != null) {
+			sql.append(" and MRHIER.RELA = ?");
+			params.add(UMLSQueryStringValue.fromString(rela));
+		}
+
+		try {
+			List<ConceptUID> children = new ArrayList<ConceptUID>();
+			ResultSet rs = substParams(sql.toString(), params).executeQuery();
+			while (rs.next()) {
+				children.add(ConceptUID.fromString(rs.getString(1)));
+			}
+			return children;
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (MalformedUMLSUniqueIdentifierException muuie) {
+			muuie.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getChilrdren(edu.emory.cci.aiw
+	 * .umls.AtomUID, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
+	 */
+	@Override
+	public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab) {
+		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+		StringBuilder sql = new StringBuilder(
+		        "select distinct(AUI) from MRHIER where PAUI = ?");
+		params.add(aui);
+		if (sab != null) {
+			sql.append(" and SAB = ?");
+			params.add(sab);
+		}
+		if (rela != null) {
+			sql.append(" and RELA = ?");
+			params.add(UMLSQueryStringValue.fromString(rela));
+		}
+
+		try {
+			List<AtomUID> children = new ArrayList<AtomUID>();
+			ResultSet rs = substParams(sql.toString(), params).executeQuery();
+			while (rs.next()) {
+				children.add(AtomUID.fromString(rs.getString(1)));
+			}
+			return children;
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (MalformedUMLSUniqueIdentifierException muuie) {
+			muuie.printStackTrace();
+		}
+
+		return null;
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getCommonChild(edu.emory.cci
+	 * .aiw.umls.AtomUID, edu.emory.cci.aiw.umls.AtomUID, java.lang.String,
+	 * edu.emory.cci.aiw.umls.SABValue)
+	 */
+	@Override
+	public AtomUID getCommonChild(AtomUID aui1, AtomUID aui2, String rela,
+	        SABValue sab) {
+		List<AtomUID> c1 = getChildren(aui1, rela, sab);
+		List<AtomUID> c2 = getChildren(aui2, rela, sab);
+
+		Comparator<AtomUID> cmp = new UMLSUIDComparator<AtomUID>();
+		Collections.sort(c1, cmp);
+		Collections.sort(c2, cmp);
+
+		for (AtomUID a : c1) {
+			for (AtomUID b : c2) {
+				if (a.equals(b)) {
+					return a;
+				}
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getCommonChild(edu.emory.cci
+	 * .aiw.umls.ConceptUID, edu.emory.cci.aiw.umls.ConceptUID,
+	 * java.lang.String, edu.emory.cci.aiw.umls.SABValue)
+	 */
+	@Override
+	public ConceptUID getCommonChild(ConceptUID cui1, ConceptUID cui2,
+	        String rela, SABValue sab) {
+		List<ConceptUID> c1 = getChildren(cui1, rela, sab);
+		List<ConceptUID> c2 = getChildren(cui2, rela, sab);
+
+		Comparator<ConceptUID> cmp = new UMLSUIDComparator<ConceptUID>();
+		Collections.sort(c1, cmp);
+		Collections.sort(c2, cmp);
+
+		for (ConceptUID a : c1) {
+			for (ConceptUID b : c2) {
+				if (a.equals(b)) {
+					return a;
+				}
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getAvailableSAB(java.lang.String
+	 * )
+	 */
+	@Override
+	public Map<SABValue, String> getAvailableSAB(String description) {
+		StringBuilder sql = new StringBuilder("select RSAB, SON from MRSAB");
+		if (description != null) {
+			sql.append(" where UPPER(SON) like UPPER(?)");
+		}
+
+		try {
+			PreparedStatement query = conn.prepareStatement(sql.toString());
+			if (description != null) {
+				query.setString(1, "%" + description + "%");
+			}
+			ResultSet rs = query.executeQuery();
+			Map<SABValue, String> result = new HashMap<SABValue, String>();
+			while (rs.next()) {
+				SABValue sab = SABValue.fromString(rs.getString(1));
+				String son = rs.getString(2);
+				result.put(sab, son);
+			}
+			return result;
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getDistBF(edu.emory.cci.aiw.
+	 * umls.ConceptUID, edu.emory.cci.aiw.umls.ConceptUID, java.lang.String,
+	 * edu.emory.cci.aiw.umls.SABValue, int)
+	 */
+	@Override
+	public int getDistBF(ConceptUID cui1, ConceptUID cui2, String rela,
+	        SABValue sab, int maxR) {
+		Queue<ConceptUID> cuiQue = new LinkedList<ConceptUID>();
+		Set<ConceptUID> visited = new HashSet<ConceptUID>();
+		Map<Integer, Integer> radiusIdx = new HashMap<Integer, Integer>();
+		int queIdx = 0;
+		int r = 0;
+		radiusIdx.put(r, 0);
+
+		if (maxR <= 0) {
+			maxR = 3;
+		}
+
+		cuiQue.add(cui1);
+		visited.add(cui1);
+
+		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+		StringBuilder sql = new StringBuilder(
+		        "select distinct(CUI2) from MRREL where CUI1 = ? and (rel='PAR' or rel='CHD')");
+		params.add(ConceptUID.EMPTY_CUI);
+		if (sab != null) {
+			sql.append(" and SAB = ?");
+			params.add(sab);
+		}
+		if (rela != null) {
+			sql.append(" and RELA = ?");
+			params.add(UMLSQueryStringValue.fromString(rela));
+		}
+
+		while (!cuiQue.isEmpty()) {
+			ConceptUID node = cuiQue.remove();
+			params.set(0, node);
+			if (node.equals(cui2)) {
+				return r;
+			}
+
+			List<ConceptUID> adjNodes = new ArrayList<ConceptUID>();
+			try {
+				ResultSet rs = substParams(sql.toString(), params).executeQuery();
+				while (rs.next()) {
+					ConceptUID c2 = ConceptUID.fromString(rs.getString(1));
+					if (!visited.contains(c2)) {
+						adjNodes.add(c2);
+					}
+				}
+			} catch (SQLException sqle) {
+				sqle.printStackTrace();
+			} catch (MalformedUMLSUniqueIdentifierException muuie) {
+				muuie.printStackTrace();
+			}
+			
+			if (!radiusIdx.containsKey(r + 1)) {
+				radiusIdx.put(r + 1, queIdx + cuiQue.size());
+			}
+			radiusIdx.put(r + 1, adjNodes.size());
+			
+			 if (queIdx == radiusIdx.get(r)) {
+				 r++;
+			 }
+			 
+			 for (ConceptUID c : adjNodes) {
+				 visited.add(c);
+				 cuiQue.add(c);
+			 }
+			 if (r > maxR) {
+				 return r;
+			 }
+		}
+
+		return 0;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getNeighbors(edu.emory.cci.aiw
+	 * .umls.NeighborQuerySearchUID, java.lang.String,
+	 * edu.emory.cci.aiw.umls.SABValue, java.lang.String)
+	 */
+	@Override
+	public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
+	        String rela, SABValue sab, String rel) {
+		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+		StringBuilder sql = new StringBuilder(
+		        "select  distinct(CUI2) from MRREL where " + ui.getKeyName()
+		                + " = ?");
+		params.add(ui);
+		if (sab != null) {
+			sql.append(" and SAB = ?");
+			params.add(sab);
+		}
+		if (rela != null) {
+			sql.append(" and RELA = ?");
+			params.add(UMLSQueryStringValue.fromString(rela));
+		}
+		if (rel != null) {
+			sql.append(" and REL = ?");
+			params.add(UMLSQueryStringValue.fromString(rel));
+		}
+
+		try {
+			ResultSet rs = substParams(sql.toString(), params).executeQuery();
+			List<ConceptUID> result = new ArrayList<ConceptUID>();
+			while (rs.next()) {
+				ConceptUID c2 = ConceptUID.fromString(rs.getString(1));
+				if (!c2.equals(ui)) {
+					result.add(c2);
+				}
+			}
+			return result;
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (MalformedUMLSUniqueIdentifierException muuie) {
+			muuie.printStackTrace();
+		}
+
+		return null;
 	}
 
 	private String singletonOrSetClause(String uidKeyName, int setSize) {
@@ -956,50 +1301,70 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		        "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA", "umlsuser",
 		        "3SqQgPOh");
 		conn.init();
-		UMLSQueryStringValue searchStr = UMLSQueryStringValue
-		        .fromString("Malignant tumour of prostate");
-		List<SABValue> sabs = new ArrayList<SABValue>();
-		sabs.add(SABValue.fromString("SNOMEDCT"));
-		sabs.add(SABValue.fromString("RXNORM"));
-		List<ConceptUID> cuis = conn.getCUI(searchStr, sabs, false);
-		for (ConceptUID cui : cuis) {
-			System.out.println(cui);
-		}
+		// UMLSQueryStringValue searchStr = UMLSQueryStringValue
+		// .fromString("Malignant tumour of prostate");
+		// List<SABValue> sabs = new ArrayList<SABValue>();
+		// sabs.add(SABValue.fromString("SNOMEDCT"));
+		// sabs.add(SABValue.fromString("RXNORM"));
+		// List<ConceptUID> cuis = conn.getCUI(searchStr, sabs, false);
+		// for (ConceptUID cui : cuis) {
+		// System.out.println(cui);
+		// }
+		//
+		// List<AtomUID> auis = conn.getAUI(searchStr, sabs.get(0));
+		// for (AtomUID aui : auis) {
+		// System.out.println(aui);
+		// }
+		//
+		// List<UMLSQueryStringValue> strings = conn.getSTR(AtomUID
+		// .fromString("A3042752"), sabs.get(0), null,
+		// UMLSPreferred.NO_PREFERENCE);
+		// for (UMLSQueryStringValue string : strings) {
+		// System.out.println(string);
+		// }
+		//
+		// List<TermUID> tuis = conn.getTUI(searchStr, sabs.get(0));
+		// for (TermUID tui : tuis) {
+		// System.out.println(tui);
+		// }
+		//
+		// List<SABValue> sabResults = conn.getSAB(UMLSQueryStringValue
+		// .fromString("prostate"));
+		// for (SABValue sab : sabResults) {
+		// System.out.println(sab);
+		// }
+		//
+		// Map<String, MapToIdResult<ConceptUID>> mapResults = conn.mapToCUI(
+		// "intraductal carcinoma of prostate", sabs);
+		// for (Map.Entry<String, MapToIdResult<ConceptUID>> entry : mapResults
+		// .entrySet()) {
+		// System.out.println("\t" + entry.getKey() + "\t" + entry.getValue());
+		// }
+		//
+		// Map<PTR, AtomUID> parents = conn.getParents(ConceptUID
+		// .fromString("C0600139"), "isa", null);
+		// System.out.println(parents.keySet().size());
+		// parents = conn.getParents(ConceptUID.fromString("C0007124"), "isa",
+		// null);
+		// System.out.println(parents.keySet().size());
+		// for (Map.Entry<List<AtomUID>, AtomUID> entry : parents.entrySet()) {
+		// System.out.println(entry.getKey() + ": " + entry.getValue());
+		// }
 
-		List<AtomUID> auis = conn.getAUI(searchStr, sabs.get(0));
-		for (AtomUID aui : auis) {
-			System.out.println(aui);
-		}
+		// CommonParent<ConceptUID> cp = conn.getCommonParent(ConceptUID
+		// .fromString("C0600139"), ConceptUID.fromString("C0007124"),
+		// null, null);
+		// System.out.println(cp.getParent() + " " + cp.getChild1Links()
+		// + " links away from " + cp.getChild1() + " "
+		// + cp.getChild2Links() + " away from " + cp.getChild2());
 
-		List<UMLSQueryStringValue> strings = conn.getSTR(AtomUID
-		        .fromString("A3042752"), sabs.get(0), null,
-		        UMLSPreferred.NO_PREFERENCE);
-		for (UMLSQueryStringValue string : strings) {
-			System.out.println(string);
-		}
+		// List<ConceptUID> children = conn.getChildren(ConceptUID
+		// .fromString("C0376358"), "isa", null);
+		// System.out.println(children);
 
-		List<TermUID> tuis = conn.getTUI(searchStr, sabs.get(0));
-		for (TermUID tui : tuis) {
-			System.out.println(tui);
-		}
-
-		List<SABValue> sabResults = conn.getSAB(UMLSQueryStringValue
-		        .fromString("prostate"));
-		for (SABValue sab : sabResults) {
-			System.out.println(sab);
-		}
-
-		Map<String, MapToIdResult<ConceptUID>> mapResults = conn.mapToCUI(
-		        "intraductal carcinoma of prostate", sabs);
-		for (Map.Entry<String, MapToIdResult<ConceptUID>> entry : mapResults
-		        .entrySet()) {
-			System.out.println("\t" + entry.getKey() + "\t" + entry.getValue());
-		}
-
-		Map<List<AtomUID>, AtomUID> parents = conn.getParents(AtomUID
-		        .fromString("A3004525"), "isa", null);
-		for (Map.Entry<List<AtomUID>, AtomUID> entry : parents.entrySet()) {
-			System.out.println(entry.getKey() + ": " + entry.getValue());
+		Map<SABValue, String> sabsFound = conn.getAvailableSAB("SNOMED");
+		for (Map.Entry<SABValue, String> sab : sabsFound.entrySet()) {
+			System.out.println(sab.getKey() + ": " + sab.getValue());
 		}
 	}
 }

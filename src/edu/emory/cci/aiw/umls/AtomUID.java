@@ -13,7 +13,7 @@ public final class AtomUID extends AbstractUMLSSearchUID implements
 	static final AtomUID EMPTY_AUI = new AtomUID("");
 	
 	static {
-		auidPattern = Pattern.compile("A\\d{7}");
+		auidPattern = Pattern.compile("A\\d{7,8}");
 	}
 
 	private AtomUID(String auid) {
@@ -28,7 +28,7 @@ public final class AtomUID extends AbstractUMLSSearchUID implements
 		} else {
 			throw new MalformedUMLSUniqueIdentifierException(
 			        "Atom Unique Identifiers must consist of the letter "
-			                + "'A' followed by 7 digits: " + auid);
+			                + "'A' followed by 7 or 8 digits: " + auid);
 		}
 	}
 
@@ -38,6 +38,13 @@ public final class AtomUID extends AbstractUMLSSearchUID implements
 		return "AUI";
 	}
 
+	public boolean equals(Object o) {
+		if (o instanceof AtomUID) {
+			return this.getValue().equals(((AtomUID) o).getValue());
+		}
+		return false;
+	}
+	
 	public static void main(String[] args) {
 		testAUID("C1234567");
 		testAUID("L1234567");

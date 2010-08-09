@@ -34,6 +34,13 @@ public final class LexicalUID extends AbstractUMLSSearchUID implements
 		return "LUI";
 	}
 
+	public boolean equals(Object o) {
+		if (o instanceof LexicalUID) {
+			return this.getValue().equals(((LexicalUID) o).getValue());
+		}
+		return false;
+	}
+	
 	public static void main(String[] args) {
 		testLUID("C1234567");
 		testLUID("L1234567");

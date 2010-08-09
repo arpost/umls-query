@@ -23,4 +23,11 @@ public final class SABValue extends AbstractUMLSSearchUID {
 	public String toString() {
 		return getSABValue();
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof SABValue) {
+			return this.getValue().equals(((SABValue) o).getValue());
+		}
+		return false;
+	}
 }

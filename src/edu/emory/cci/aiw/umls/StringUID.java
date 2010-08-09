@@ -33,6 +33,13 @@ public final class StringUID extends AbstractUMLSSearchUID implements
 	public String getKeyName() {
 		return "SUI";
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof StringUID) {
+			return this.getValue().equals(((StringUID) o).getValue());
+		}
+		return false;
+	}
 
 	public static void main(String[] args) {
 		testSUID("C1234567");

@@ -35,6 +35,13 @@ public final class ConceptUID extends AbstractUMLSSearchUID implements
 	public String getKeyName() {
 		return "CUI";
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof ConceptUID) {
+			return this.getValue().equals(((ConceptUID) o).getValue());
+		}
+		return false;
+	}
 
 	public static void main(String[] args) {
 		testCUID("C1234567");

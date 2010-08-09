@@ -19,6 +19,13 @@ public final class TermUID extends AbstractUMLSSearchUID {
 	public String getKeyName() {
 		return "TUI";
 	}
+	
+	public boolean equals(Object o) {
+		if (o instanceof TermUID) {
+			return this.getValue().equals(((TermUID) o).getValue());
+		}
+		return false;
+	}
 
 	public static TermUID fromString(String tui)
 	        throws MalformedUMLSUniqueIdentifierException {
