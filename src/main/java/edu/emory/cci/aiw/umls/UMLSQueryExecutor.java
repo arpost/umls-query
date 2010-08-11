@@ -37,9 +37,12 @@ public interface UMLSQueryExecutor {
      *            whether the search is case sensitive or not
      * @return a list of <tt>ConceptUID</tt>s for the given search parameter,
      *         possibly restricted by one or more SABs
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public List<ConceptUID> getCUI(CUIQuerySearchUID uid, List<SABValue> sabs,
-	    boolean caseSensitive);
+	    boolean caseSensitive) throws UMLSQueryException;
 
     /**
      * Retrieves the Concept Unique Identifiers (CUIs) for the given CUI values,
@@ -54,9 +57,13 @@ public interface UMLSQueryExecutor {
      * @param caseSensitive
      *            whether or not the search should be case sensitive
      * @return a map from the given CUI values to their respective CUI matches
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<ConceptUID, List<ConceptUID>> getCUIMultByCUI(
-	    List<ConceptUID> cuis, List<SABValue> sabs, boolean caseSensitive);
+	    List<ConceptUID> cuis, List<SABValue> sabs, boolean caseSensitive)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the Concept Unique Identifiers (CUIs) for the given Atom Unique
@@ -71,9 +78,13 @@ public interface UMLSQueryExecutor {
      * @param caseSensitive
      *            whether or not the search should be case sensitive
      * @return a map from the given AUI values to their respective CUI matches
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<AtomUID, List<ConceptUID>> getCUIMultByAUI(List<AtomUID> auis,
-	    List<SABValue> sabs, boolean caseSensitive);
+	    List<SABValue> sabs, boolean caseSensitive)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the Concept Unique Identifiers (CUIs) for the given Lexical
@@ -89,9 +100,13 @@ public interface UMLSQueryExecutor {
      * @param caseSensitive
      *            whether or not the search should be case sensitive
      * @return a map from the given LUI values to their respective CUI matches
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<LexicalUID, List<ConceptUID>> getCUIMultByLUI(
-	    List<LexicalUID> luis, List<SABValue> sabs, boolean caseSensitive);
+	    List<LexicalUID> luis, List<SABValue> sabs, boolean caseSensitive)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the Concept Unique Identifiers (CUIs) for the given String
@@ -107,9 +122,13 @@ public interface UMLSQueryExecutor {
      * @param caseSensitive
      *            whether or not the search should be case sensitive
      * @return a map from the given SUI values to their respective CUI matches
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<StringUID, List<ConceptUID>> getCUIMultBySUI(
-	    List<StringUID> suis, List<SABValue> sabs, boolean caseSensitive);
+	    List<StringUID> suis, List<SABValue> sabs, boolean caseSensitive)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the Concept Unique Identifiers (CUIs) for the given text
@@ -124,10 +143,13 @@ public interface UMLSQueryExecutor {
      * @param caseSensitive
      *            whether or not the search should be case sensitive
      * @return a map from the given text strings to their respective CUI matches
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<UMLSQueryStringValue, List<ConceptUID>> getCUIMultByString(
 	    List<UMLSQueryStringValue> strings, List<SABValue> sabs,
-	    boolean caseSensitive);
+	    boolean caseSensitive) throws UMLSQueryException;
 
     /**
      * Retrieves the Atom Unique Identifiers (AUIs) for the given search
@@ -141,8 +163,12 @@ public interface UMLSQueryExecutor {
      *            the SAB dictionary to restrict the serach to; if null, all
      *            dictionaries are searched
      * @return a list of AUIs that match the search parameter
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
-    public List<AtomUID> getAUI(AUIQuerySearchUID uid, SABValue sab);
+    public List<AtomUID> getAUI(AUIQuerySearchUID uid, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the string description of the given unique identifier,
@@ -163,9 +189,13 @@ public interface UMLSQueryExecutor {
      *            whether to consider preferred values. Possible values for this
      *            parameter are: no preference; preferred; and not preferred.
      * @return a list of the string descriptions matching the search parameter
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public List<UMLSQueryStringValue> getSTR(STRQuerySearchUID uid,
-	    SABValue sab, LATValue lat, UMLSPreferred preferred);
+	    SABValue sab, LATValue lat, UMLSPreferred preferred)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the Term Unique Identifiers (TUIs) for the given search values,
@@ -180,8 +210,15 @@ public interface UMLSQueryExecutor {
      *            SAB dictionary to restrict the search to; if null, all
      *            dictionaries are searched
      * @return a list of TUI values matching the search parameter
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
-    public List<TermUID> getTUI(TUIQuerySearchUID uid, SABValue sab);
+    public List<TermUID> getTUI(TUIQuerySearchUID uid, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the SAB dictionaries the given unique identifier or text string
@@ -193,8 +230,12 @@ public interface UMLSQueryExecutor {
      * @param uid
      *            the unique identifier or text string to search for
      * @return a list of SAB dictionaries that match the search parameter
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
-    public List<SABValue> getSAB(SABQuerySearchUID uid);
+    public List<SABValue> getSAB(SABQuerySearchUID uid)
+	    throws UMLSQueryException;
 
     /**
      * Maps the given phrase to a Concept Unique Identifier (CUI), in the
@@ -217,9 +258,12 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a map of the matched portions of the phrase to the CUI and string
      *         that matched
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<String, MapToIdResult<ConceptUID>> mapToCUI(String phrase,
-	    List<SABValue> sab);
+	    List<SABValue> sab) throws UMLSQueryException;
 
     /**
      * Maps the given phrase to a Atom Unique Identifier (AUI), in the following
@@ -242,9 +286,12 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a map of the matched portions of the phrase to the AUI and string
      *         that matched
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<String, MapToIdResult<AtomUID>> mapToAUI(String phrase,
-	    List<SABValue> sab);
+	    List<SABValue> sab) throws UMLSQueryException;
 
     /**
      * Maps the given phrase to a Lexical Unique Identifier (LUI), in the
@@ -267,9 +314,12 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a map of the matched portions of the phrase to the CUI and string
      *         that matched
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<String, MapToIdResult<LexicalUID>> mapToLUI(String phrase,
-	    List<SABValue> sab);
+	    List<SABValue> sab) throws UMLSQueryException;
 
     /**
      * Maps the given phrase to a String Unique Identifier (SUI), in the
@@ -292,9 +342,12 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a map of the matched portions of the phrase to the SUI and string
      *         that matched
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<String, MapToIdResult<StringUID>> mapToSUI(String phrase,
-	    List<SABValue> sab);
+	    List<SABValue> sab) throws UMLSQueryException;
 
     /**
      * Retrieves the parents of the specified unique identifier, optionally
@@ -318,9 +371,12 @@ public interface UMLSQueryExecutor {
      *            the dictionary to restrict the search to; if null, all
      *            dictionaries are searched
      * @return a mapping from parent path to direct parent AUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<PTR, AtomUID> getParents(ParentsQuerySearchUID uid, String rela,
-	    SABValue sab);
+	    SABValue sab) throws UMLSQueryException;
 
     /**
      * Retrieves the parents of a list of Concept Unique Identifiers (CUIs),
@@ -343,9 +399,13 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a mapping from CUI to a mapping from parent path to direct parent
      *         AUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<ConceptUID, Map<PTR, AtomUID>> getParentsMultByCUI(
-	    List<ConceptUID> cuis, String rela, SABValue sab);
+	    List<ConceptUID> cuis, String rela, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the parents of a list of Atom Unique Identifiers (AUIs),
@@ -368,9 +428,13 @@ public interface UMLSQueryExecutor {
      *            dictionaries are searched
      * @return a mapping from AUI to a mapping from parent path to direct parent
      *         AUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public Map<AtomUID, Map<PTR, AtomUID>> getParentsMultByAUI(
-	    List<AtomUID> auis, String rela, SABValue sab);
+	    List<AtomUID> auis, String rela, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the common parent of two Concept Unique Identifiers (CUIs) or
@@ -396,9 +460,13 @@ public interface UMLSQueryExecutor {
      *            if not null, the dictionary to restrict the search to;
      *            otherwise, all dictionaries are considered
      * @return the common parent of the specified UIs
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public <T extends ParentsQuerySearchUID> CommonParent<T> getCommonParent(
-	    T uid1, T uid2, String rela, SABValue sab);
+	    T uid1, T uid2, String rela, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the direct children Concept Unique Identifiers (CUIs) for the
@@ -414,9 +482,12 @@ public interface UMLSQueryExecutor {
      *            if not null, the SAB dictionary to restrict the search to;
      *            otherwise, all dictionaries are searched
      * @return the list of CUIs that are the children of the specified CUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public List<ConceptUID> getChildren(ConceptUID cui, String rela,
-	    SABValue sab);
+	    SABValue sab) throws UMLSQueryException;
 
     /**
      * Retrieves the direct children Atom Unique Identifiers (AUIs) for the
@@ -432,8 +503,12 @@ public interface UMLSQueryExecutor {
      *            if not null, the SAB dictionary to restrict the search to;
      *            otherwise, all dictionaries are searched
      * @return the list of AUIs that are the children of the specified AUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
-    public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab);
+    public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the child Concept Unique Identifier (CUI) that is common to the
@@ -451,9 +526,12 @@ public interface UMLSQueryExecutor {
      *            if not null, the dictionary to restrict the search to;
      *            otherwise, all relationships are considered
      * @return the CUI that is the common child of the specified CUIs
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public ConceptUID getCommonChild(ConceptUID cui1, ConceptUID cui2,
-	    String rela, SABValue sab);
+	    String rela, SABValue sab) throws UMLSQueryException;
 
     /**
      * Retrieves the child Atom Unique Identifier (AUI) that is common to the
@@ -471,9 +549,12 @@ public interface UMLSQueryExecutor {
      *            if not null, the dictionary to restrict the search to;
      *            otherwise, all relationships are considered
      * @return the AUI that is the common child of the specified AUIs
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public AtomUID getCommonChild(AtomUID aui1, AtomUID aui2, String rela,
-	    SABValue sab);
+	    SABValue sab) throws UMLSQueryException;
 
     /**
      * Retrieves all the SAB dictionaries whose descriptions contain the search
@@ -483,8 +564,12 @@ public interface UMLSQueryExecutor {
      * @param term
      *            the search terms to match in the SAB descriptions
      * @return a map from SAB values to their full descriptions
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
-    public Map<SABValue, String> getAvailableSAB(String term);
+    public Map<SABValue, String> getAvailableSAB(String term)
+	    throws UMLSQueryException;
 
     /**
      * Retrieves the distance from a specified Concept Unique Identifier (CUI)
@@ -507,9 +592,12 @@ public interface UMLSQueryExecutor {
      *            the maximum radius to consider when searching for
      *            <tt>cui2</tt>
      * @return the distance from <tt>cui1</tt> to <tt>cui2</tt>
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public int getDistBF(ConceptUID cui1, ConceptUID cui2, String rela,
-	    SABValue sab, int maxR);
+	    SABValue sab, int maxR) throws UMLSQueryException;
 
     /**
      * Retrieves the neighboring Concept Unique Identifiers for the given CUI or
@@ -526,7 +614,10 @@ public interface UMLSQueryExecutor {
      *            otherwise, all relationships are considered
      * @param rel
      * @return a list of CUIs that are the neighbors of the given CUI or AUI
+     * @throws UMLSQueryException
+     *             if something goes wrong during the query execution. Any
+     *             lower-level exceptions will be passed along.
      */
     public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
-	    String rela, SABValue sab, String rel);
+	    String rela, SABValue sab, String rel) throws UMLSQueryException;
 }

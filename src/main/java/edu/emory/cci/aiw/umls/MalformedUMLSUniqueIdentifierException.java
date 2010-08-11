@@ -1,25 +1,29 @@
 package edu.emory.cci.aiw.umls;
 
-public class MalformedUMLSUniqueIdentifierException extends Exception {
+/**
+ * Checked exception for malformed UMLS unique identifiers
+ * 
+ * @author Michel Mansour
+ *
+ */
+
+public final class MalformedUMLSUniqueIdentifierException extends UMLSQueryException {
 
 	public MalformedUMLSUniqueIdentifierException() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public MalformedUMLSUniqueIdentifierException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MalformedUMLSUniqueIdentifierException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
 	}
 
 	public MalformedUMLSUniqueIdentifierException(String message,
 			Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
 }
