@@ -15,53 +15,59 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.arp.javautil.arrays.Arrays;
+import org.arp.javautil.sql.DatabaseAPI;
+import org.arp.javautil.sql.InvalidConnectionSpecArguments;
 
 public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     private Connection conn;
 
+    private final DatabaseAPI api;
     private final String url;
     private final String user;
     private final String password;
 
-    private static boolean isInit = false;
-    private static UMLSDatabaseConnection persistentConn;
-
-    @Override
-    public void finish() throws Exception {
-	conn.close();
-	isInit = false;
-    }
-
-    @Override
-    public void init() throws Exception {
-	if (!isInit) {
-	    Class.forName("com.mysql.jdbc.Driver");
-	    conn = DriverManager.getConnection(this.url, this.user,
-		    this.password);
-	    isInit = true;
-	}
-    }
-
-    private UMLSDatabaseConnection(String url, String user, String password) {
+    private UMLSDatabaseConnection(DatabaseAPI api, String url, String user,
+	    String password) {
+	this.api = api;
 	this.url = url;
 	this.user = user;
 	this.password = password;
     }
 
-    public static UMLSDatabaseConnection getConnection(String url, String user,
-	    String password) {
-	if (persistentConn == null) {
-	    persistentConn = newConnection(url, user, password);
-	}
-	return persistentConn;
+    public static UMLSDatabaseConnection getConnection(DatabaseAPI api,
+	    String url, String user, String password) {
+	return new UMLSDatabaseConnection(api, url, user, password);
     }
 
-    private static UMLSDatabaseConnection newConnection(String url,
-	    String user, String password) {
-	return new UMLSDatabaseConnection(url, user, password);
+    private void setupConn() throws UMLSQueryException {
+	UMLSUtil.logger().log(Level.INFO,
+	        "Attempting to establish database connection...");
+	try {
+	    conn = api.newConnectionSpecInstance(url, user, password)
+		    .getOrCreate();
+	    UMLSUtil.logger().log(Level.INFO,
+		    "Connection established with " + url);
+	} catch (SQLException sqle) {
+	    throw new UMLSQueryException(sqle);
+	} catch (InvalidConnectionSpecArguments icsa) {
+	    throw new UMLSQueryException(icsa);
+	}
+    }
+
+    private void tearDownConn() throws UMLSQueryException {
+	UMLSUtil.logger().log(Level.INFO,
+	        "Attempting to disconnect from the database...");
+	try {
+	    conn.close();
+	    UMLSUtil.logger().log(Level.INFO,
+		    "Disconnected from database " + url);
+	} catch (SQLException sqle) {
+	    throw new UMLSQueryException(sqle);
+	}
     }
 
     /*
@@ -74,34 +80,33 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<ConceptUID> getCUI(CUIQuerySearchUID uid, List<SABValue> sabs,
 	    boolean caseSensitive) throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(CUI) from MRCONSO where ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ");
-
-	if (caseSensitive) {
-	    sql.append("BINARY ");
-	}
-	sql.append("?");
-
-	if (sabs != null && !sabs.isEmpty()) {
-	    sql.append(" and ");
-	    sql.append(singletonOrSetClause(sabs.get(0).getKeyName(), sabs
-		    .size()));
-	}
-
-	System.out.println(sql);
-
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	params.add(uid);
-	if (sabs != null) {
-	    params.addAll(sabs);
-	}
-
 	try {
-	    PreparedStatement query = substParams(sql.toString(), params);
-	    System.out.println(query);
-	    ResultSet r = query.executeQuery();
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(CUI) from MRCONSO where ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ");
+
+	    if (caseSensitive) {
+		sql.append("BINARY ");
+	    }
+	    sql.append("?");
+
+	    if (sabs != null && !sabs.isEmpty()) {
+		sql.append(" and ");
+		sql.append(singletonOrSetClause(sabs.get(0).getKeyName(), sabs
+		        .size()));
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    params.add(uid);
+	    if (sabs != null) {
+		params.addAll(sabs);
+	    }
+
+	    ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 	    List<ConceptUID> cuis = new ArrayList<ConceptUID>();
 	    while (r.next()) {
 		cuis.add(ConceptUID.fromString(r.getString(1)));
@@ -111,8 +116,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
-
     }
 
     private ResultSet getCUIMult(List<? extends CUIQuerySearchUID> uids,
@@ -129,12 +135,14 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		    .size()));
 	}
 
+	UMLSUtil.logger().log(Level.FINE, sql.toString());
+
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 	params.addAll(uids);
 	if (sabs != null) {
 	    params.addAll(sabs);
 	}
-	return substParams(sql.toString(), params).executeQuery();
+	return executeAndLogQuery(substParams(sql.toString(), params));
     }
 
     /*
@@ -151,6 +159,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<ConceptUID, List<ConceptUID>> result = new HashMap<ConceptUID, List<ConceptUID>>();
 
 	try {
+	    setupConn();
 	    ResultSet rs = getCUIMult(cuis, sabs, caseSensitive);
 	    while (rs.next()) {
 		ConceptUID cui = ConceptUID.fromString(rs.getString(1));
@@ -166,6 +175,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -183,6 +194,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<AtomUID, List<ConceptUID>> result = new HashMap<AtomUID, List<ConceptUID>>();
 
 	try {
+	    setupConn();
 	    ResultSet rs = getCUIMult(auis, sabs, caseSensitive);
 	    while (rs.next()) {
 		ConceptUID cui = ConceptUID.fromString(rs.getString(1));
@@ -198,6 +210,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -215,6 +229,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<LexicalUID, List<ConceptUID>> result = new HashMap<LexicalUID, List<ConceptUID>>();
 
 	try {
+	    setupConn();
 	    ResultSet rs = getCUIMult(luis, sabs, caseSensitive);
 	    while (rs.next()) {
 		ConceptUID cui = ConceptUID.fromString(rs.getString(1));
@@ -230,6 +245,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -247,6 +264,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<UMLSQueryStringValue, List<ConceptUID>> result = new HashMap<UMLSQueryStringValue, List<ConceptUID>>();
 
 	try {
+	    setupConn();
 	    ResultSet rs = getCUIMult(strings, sabs, caseSensitive);
 	    while (rs.next()) {
 		ConceptUID cui = ConceptUID.fromString(rs.getString(1));
@@ -263,6 +281,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -280,6 +300,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<StringUID, List<ConceptUID>> result = new HashMap<StringUID, List<ConceptUID>>();
 
 	try {
+	    setupConn();
 	    ResultSet rs = getCUIMult(suis, sabs, caseSensitive);
 	    while (rs.next()) {
 		ConceptUID cui = ConceptUID.fromString(rs.getString(1));
@@ -295,6 +316,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -308,29 +331,28 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<AtomUID> getAUI(AUIQuerySearchUID uid, SABValue sab)
 	    throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(AUI) from MRCONSO where ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ?");
-
-	if (sab != null) {
-	    sql.append(" and ");
-	    sql.append(sab.getKeyName());
-	    sql.append(" = ?");
-	}
-
-	System.out.println(sql);
-
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	params.add(uid);
-	if (sab != null) {
-	    params.add(sab);
-	}
-
 	try {
-	    PreparedStatement query = substParams(sql.toString(), params);
-	    System.out.println(query);
-	    ResultSet r = query.executeQuery();
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(AUI) from MRCONSO where ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ?");
+
+	    if (sab != null) {
+		sql.append(" and ");
+		sql.append(sab.getKeyName());
+		sql.append(" = ?");
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    params.add(uid);
+	    if (sab != null) {
+		params.add(sab);
+	    }
+
+	    ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 	    List<AtomUID> auis = new ArrayList<AtomUID>();
 	    while (r.next()) {
 		auis.add(AtomUID.fromString(r.getString(1)));
@@ -340,6 +362,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -355,42 +379,40 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     public List<UMLSQueryStringValue> getSTR(STRQuerySearchUID uid,
 	    SABValue sab, LATValue lat, UMLSPreferred preferred)
 	    throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(STR) from MRCONSO where ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ?");
-
-	if (preferred != null && preferred.equals(UMLSPreferred.PREFERRED)) {
-	    sql.append(" and TS = 'P' and STT = 'PF' and ISPREF= 'Y'");
-	}
-
-	if (sab != null) {
-	    sql.append(" and ");
-	    sql.append(sab.getKeyName());
-	    sql.append(" = ?");
-	}
-
-	if (lat != null) {
-	    sql.append(" and ");
-	    sql.append(lat.getKeyName());
-	    sql.append(" = ?");
-	}
-
-	System.out.println(sql);
-
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	params.add(uid);
-	if (sab != null) {
-	    params.add(sab);
-	}
-	if (lat != null) {
-	    params.add(lat);
-	}
-
 	try {
-	    PreparedStatement query = substParams(sql.toString(), params);
-	    System.out.println(query);
-	    ResultSet r = query.executeQuery();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(STR) from MRCONSO where ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ?");
+
+	    if (preferred != null && preferred.equals(UMLSPreferred.PREFERRED)) {
+		sql.append(" and TS = 'P' and STT = 'PF' and ISPREF= 'Y'");
+	    }
+
+	    if (sab != null) {
+		sql.append(" and ");
+		sql.append(sab.getKeyName());
+		sql.append(" = ?");
+	    }
+
+	    if (lat != null) {
+		sql.append(" and ");
+		sql.append(lat.getKeyName());
+		sql.append(" = ?");
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    params.add(uid);
+	    if (sab != null) {
+		params.add(sab);
+	    }
+	    if (lat != null) {
+		params.add(lat);
+	    }
+
+	    ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 	    List<UMLSQueryStringValue> strings = new ArrayList<UMLSQueryStringValue>();
 	    while (r.next()) {
 		strings.add(UMLSQueryStringValue.fromString(r.getString(1)));
@@ -398,6 +420,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    return strings;
 	} catch (SQLException sqle) {
 	    throw new UMLSQueryException(sqle);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -411,30 +435,30 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<TermUID> getTUI(TUIQuerySearchUID uid, SABValue sab)
 	    throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(TUI) from MRCONSO a, MRSTY b "
-	                + "where a.CUI = b.CUI and ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ?");
-
-	if (sab != null) {
-	    sql.append(" and ");
-	    sql.append(sab.getKeyName());
-	    sql.append(" = ?");
-	}
-
-	System.out.println(sql);
-
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	params.add(uid);
-	if (sab != null) {
-	    params.add(sab);
-	}
-
 	try {
-	    PreparedStatement query = substParams(sql.toString(), params);
-	    System.out.println(query);
-	    ResultSet r = query.executeQuery();
+	    setupConn();
+
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(TUI) from MRCONSO a, MRSTY b "
+		            + "where a.CUI = b.CUI and ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ?");
+
+	    if (sab != null) {
+		sql.append(" and ");
+		sql.append(sab.getKeyName());
+		sql.append(" = ?");
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    params.add(uid);
+	    if (sab != null) {
+		params.add(sab);
+	    }
+
+	    ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 	    List<TermUID> tuis = new ArrayList<TermUID>();
 	    while (r.next()) {
 		tuis.add(TermUID.fromString(r.getString(1)));
@@ -444,6 +468,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -457,20 +483,20 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<SABValue> getSAB(SABQuerySearchUID uid)
 	    throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(SAB) from MRCONSO where ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ?");
-
-	System.out.println(sql);
-
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	params.add(uid);
-
 	try {
-	    PreparedStatement query = substParams(sql.toString(), params);
-	    System.out.println(query);
-	    ResultSet r = query.executeQuery();
+	    setupConn();
+
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(SAB) from MRCONSO where ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ?");
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    params.add(uid);
+
+	    ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 	    List<SABValue> sabs = new ArrayList<SABValue>();
 	    while (r.next()) {
 		sabs.add(SABValue.fromString(r.getString(1)));
@@ -478,6 +504,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    return sabs;
 	} catch (SQLException sqle) {
 	    throw new UMLSQueryException(sqle);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -493,6 +521,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 		    .size()));
 	}
 
+	UMLSUtil.logger().log(Level.FINE, sql.toString());
+
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 	// capitalize the first letter of the phrase
 	params.add(UMLSQueryStringValue.fromString(new StringBuilder(phrase
@@ -502,7 +532,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    params.addAll(sabs);
 	}
 
-	return substParams(sql.toString(), params).executeQuery();
+	return executeAndLogQuery(substParams(sql.toString(), params));
     }
 
     private Map<String, List<String>> matches(String phrase, ResultSet rs)
@@ -574,6 +604,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    List<SABValue> sab) throws UMLSQueryException {
 	Map<String, MapToIdResult<AtomUID>> result = new HashMap<String, MapToIdResult<AtomUID>>();
 	try {
+	    setupConn();
 	    Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
 		    IdType.AUI_IDTYPE, sab));
 	    if (matches.containsKey(phrase)) {
@@ -608,6 +639,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -622,6 +655,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    List<SABValue> sab) throws UMLSQueryException {
 	Map<String, MapToIdResult<ConceptUID>> result = new HashMap<String, MapToIdResult<ConceptUID>>();
 	try {
+	    setupConn();
 	    Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
 		    IdType.CUI_IDTYPE, sab));
 	    if (matches.containsKey(phrase)) {
@@ -657,6 +691,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -671,6 +707,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    List<SABValue> sab) throws UMLSQueryException {
 	Map<String, MapToIdResult<LexicalUID>> result = new HashMap<String, MapToIdResult<LexicalUID>>();
 	try {
+	    setupConn();
 	    Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
 		    IdType.LUI_IDTYPE, sab));
 	    if (matches.containsKey(phrase)) {
@@ -706,6 +743,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -720,6 +759,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    List<SABValue> sab) throws UMLSQueryException {
 	Map<String, MapToIdResult<StringUID>> result = new HashMap<String, MapToIdResult<StringUID>>();
 	try {
+	    setupConn();
 	    Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
 		    IdType.CUI_IDTYPE, sab));
 	    if (matches.containsKey(phrase)) {
@@ -755,6 +795,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -772,22 +814,26 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	Map<PTR, AtomUID> result = new HashMap<PTR, AtomUID>();
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(PTR), PAUI from MRHIER where ");
-	sql.append(uid.getKeyName());
-	sql.append(" = ?");
-	params.add(uid);
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null && !rela.equals("")) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
-
 	try {
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(PTR), PAUI from MRHIER where ");
+	    sql.append(uid.getKeyName());
+	    sql.append(" = ?");
+	    params.add(uid);
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null && !rela.equals("")) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    while (rs.next()) {
 		PTR ptr = new PTR(rs.getString(1));
 		AtomUID aui = AtomUID.fromString(rs.getString(2));
@@ -798,6 +844,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -815,23 +863,30 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
 	Map<AtomUID, Map<PTR, AtomUID>> result = new HashMap<AtomUID, Map<PTR, AtomUID>>();
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder("select distinct(PTR), PAUI, ");
-	sql.append(auis.get(0).getKeyName());
-	sql.append(" from MRHIER where");
-	sql.append(singletonOrSetClause(auis.get(0).getKeyName(), auis.size()));
-	params.addAll(auis);
-
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null && !rela.equals("")) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
 
 	try {
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(PTR), PAUI, ");
+	    sql.append(auis.get(0).getKeyName());
+	    sql.append(" from MRHIER where");
+	    sql.append(singletonOrSetClause(auis.get(0).getKeyName(), auis
+		    .size()));
+	    params.addAll(auis);
+
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null && !rela.equals("")) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    while (rs.next()) {
 		PTR ptr = new PTR(rs.getString(1));
 		AtomUID paui = AtomUID.fromString(rs.getString(2));
@@ -844,6 +899,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -861,23 +918,31 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
 	Map<ConceptUID, Map<PTR, AtomUID>> result = new HashMap<ConceptUID, Map<PTR, AtomUID>>();
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder("select distinct(PTR), PAUI, ");
-	sql.append(cuis.get(0).getKeyName());
-	sql.append(" from MRHIER where");
-	sql.append(singletonOrSetClause(cuis.get(0).getKeyName(), cuis.size()));
-	params.addAll(cuis);
-
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null && !rela.equals("")) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
 
 	try {
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    setupConn();
+
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(PTR), PAUI, ");
+	    sql.append(cuis.get(0).getKeyName());
+	    sql.append(" from MRHIER where");
+	    sql.append(singletonOrSetClause(cuis.get(0).getKeyName(), cuis
+		    .size()));
+	    params.addAll(cuis);
+
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null && !rela.equals("")) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+
+	    UMLSUtil.logger().log(Level.FINE, sql.toString());
+
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    while (rs.next()) {
 		PTR ptr = new PTR(rs.getString(1));
 		AtomUID paui = AtomUID.fromString(rs.getString(2));
@@ -890,6 +955,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -949,22 +1016,25 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     public List<ConceptUID> getChildren(ConceptUID cui, String rela,
 	    SABValue sab) throws UMLSQueryException {
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(m2.CUI) from MRHIER, MRCONSO as m1, MRCONSO as m2 where MRHIER.PAUI = m1.AUI and m1.CUI = ?");
-	params.add(cui);
-	sql.append(" and MRHIER.AUI = m2.AUI");
-	if (sab != null) {
-	    sql.append(" and MRHIER.SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null) {
-	    sql.append(" and MRHIER.RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
 
 	try {
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(m2.CUI) from MRHIER, MRCONSO as m1, MRCONSO as m2 where MRHIER.PAUI = m1.AUI and m1.CUI = ?");
+	    params.add(cui);
+	    sql.append(" and MRHIER.AUI = m2.AUI");
+	    if (sab != null) {
+		sql.append(" and MRHIER.SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null) {
+		sql.append(" and MRHIER.RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+
 	    List<ConceptUID> children = new ArrayList<ConceptUID>();
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    while (rs.next()) {
 		children.add(ConceptUID.fromString(rs.getString(1)));
 	    }
@@ -973,6 +1043,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -987,21 +1059,24 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab)
 	    throws UMLSQueryException {
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(AUI) from MRHIER where PAUI = ?");
-	params.add(aui);
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
 
 	try {
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(AUI) from MRHIER where PAUI = ?");
+	    params.add(aui);
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+
 	    List<AtomUID> children = new ArrayList<AtomUID>();
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    while (rs.next()) {
 		children.add(AtomUID.fromString(rs.getString(1)));
 	    }
@@ -1010,6 +1085,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -1079,17 +1156,19 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public Map<SABValue, String> getAvailableSAB(String description)
 	    throws UMLSQueryException {
-	StringBuilder sql = new StringBuilder("select RSAB, SON from MRSAB");
-	if (description != null) {
-	    sql.append(" where UPPER(SON) like UPPER(?)");
-	}
 
 	try {
+	    setupConn();
+	    StringBuilder sql = new StringBuilder("select RSAB, SON from MRSAB");
+	    if (description != null) {
+		sql.append(" where UPPER(SON) like UPPER(?)");
+	    }
+
 	    PreparedStatement query = conn.prepareStatement(sql.toString());
 	    if (description != null) {
 		query.setString(1, "%" + description + "%");
 	    }
-	    ResultSet rs = query.executeQuery();
+	    ResultSet rs = executeAndLogQuery(query);
 	    Map<SABValue, String> result = new HashMap<SABValue, String>();
 	    while (rs.next()) {
 		SABValue sab = SABValue.fromString(rs.getString(1));
@@ -1099,6 +1178,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    return result;
 	} catch (SQLException sqle) {
 	    throw new UMLSQueryException(sqle);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -1124,64 +1205,68 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    maxR = 3;
 	}
 
-	cuiQue.add(cui1);
-	visited.add(cui1);
+	try {
+	    setupConn();
+	    cuiQue.add(cui1);
+	    visited.add(cui1);
 
-	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder(
-	        "select distinct(CUI2) from MRREL where CUI1 = ? and (rel='PAR' or rel='CHD')");
-	params.add(ConceptUID.EMPTY_CUI);
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
-
-	while (!cuiQue.isEmpty()) {
-	    ConceptUID node = cuiQue.remove();
-	    params.set(0, node);
-	    if (node.equals(cui2)) {
-		return r;
+	    List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+	    StringBuilder sql = new StringBuilder(
+		    "select distinct(CUI2) from MRREL where CUI1 = ? and (rel='PAR' or rel='CHD')");
+	    params.add(ConceptUID.EMPTY_CUI);
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
 	    }
 
-	    List<ConceptUID> adjNodes = new ArrayList<ConceptUID>();
-	    try {
-		ResultSet rs = substParams(sql.toString(), params)
-		        .executeQuery();
+	    while (!cuiQue.isEmpty()) {
+		ConceptUID node = cuiQue.remove();
+		params.set(0, node);
+		if (node.equals(cui2)) {
+		    return r;
+		}
+
+		List<ConceptUID> adjNodes = new ArrayList<ConceptUID>();
+
+		ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		        params));
 		while (rs.next()) {
 		    ConceptUID c2 = ConceptUID.fromString(rs.getString(1));
 		    if (!visited.contains(c2)) {
 			adjNodes.add(c2);
 		    }
 		}
-	    } catch (SQLException sqle) {
-		throw new UMLSQueryException(sqle);
-	    } catch (MalformedUMLSUniqueIdentifierException muuie) {
-		throw new UMLSQueryException(muuie);
-	    }
 
-	    if (!radiusIdx.containsKey(r + 1)) {
-		radiusIdx.put(r + 1, queIdx + cuiQue.size());
-	    }
-	    radiusIdx.put(r + 1, adjNodes.size());
+		if (!radiusIdx.containsKey(r + 1)) {
+		    radiusIdx.put(r + 1, queIdx + cuiQue.size());
+		}
+		radiusIdx.put(r + 1, adjNodes.size());
 
-	    if (queIdx == radiusIdx.get(r)) {
-		r++;
-	    }
+		if (queIdx == radiusIdx.get(r)) {
+		    r++;
+		}
 
-	    for (ConceptUID c : adjNodes) {
-		visited.add(c);
-		cuiQue.add(c);
+		for (ConceptUID c : adjNodes) {
+		    visited.add(c);
+		    cuiQue.add(c);
+		}
+		if (r > maxR) {
+		    return r;
+		}
 	    }
-	    if (r > maxR) {
-		return r;
-	    }
+	} catch (SQLException sqle) {
+	    throw new UMLSQueryException(sqle);
+	} catch (MalformedUMLSUniqueIdentifierException muuie) {
+	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
 
-	return 0;
+	return -1;
     }
 
     /*
@@ -1196,25 +1281,28 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
 	    String rela, SABValue sab, String rel) throws UMLSQueryException {
 	List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
-	StringBuilder sql = new StringBuilder(
-	        "select  distinct(CUI2) from MRREL where " + ui.getKeyName()
-	                + " = ?");
-	params.add(ui);
-	if (sab != null) {
-	    sql.append(" and SAB = ?");
-	    params.add(sab);
-	}
-	if (rela != null) {
-	    sql.append(" and RELA = ?");
-	    params.add(UMLSQueryStringValue.fromString(rela));
-	}
-	if (rel != null) {
-	    sql.append(" and REL = ?");
-	    params.add(UMLSQueryStringValue.fromString(rel));
-	}
 
 	try {
-	    ResultSet rs = substParams(sql.toString(), params).executeQuery();
+	    setupConn();
+	    StringBuilder sql = new StringBuilder(
+		    "select  distinct(CUI2) from MRREL where "
+		            + ui.getKeyName() + " = ?");
+	    params.add(ui);
+	    if (sab != null) {
+		sql.append(" and SAB = ?");
+		params.add(sab);
+	    }
+	    if (rela != null) {
+		sql.append(" and RELA = ?");
+		params.add(UMLSQueryStringValue.fromString(rela));
+	    }
+	    if (rel != null) {
+		sql.append(" and REL = ?");
+		params.add(UMLSQueryStringValue.fromString(rel));
+	    }
+
+	    ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+		    params));
 	    List<ConceptUID> result = new ArrayList<ConceptUID>();
 	    while (rs.next()) {
 		ConceptUID c2 = ConceptUID.fromString(rs.getString(1));
@@ -1227,6 +1315,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	    throw new UMLSQueryException(sqle);
 	} catch (MalformedUMLSUniqueIdentifierException muuie) {
 	    throw new UMLSQueryException(muuie);
+	} finally {
+	    tearDownConn();
 	}
     }
 
@@ -1254,6 +1344,12 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	return query;
     }
 
+    private ResultSet executeAndLogQuery(PreparedStatement query)
+	    throws SQLException {
+	UMLSUtil.logger().log(Level.INFO, "Executing query: " + query);
+	return query.executeQuery();
+    }
+
     public void testQuery() throws SQLException {
 	PreparedStatement stmt = conn
 	        .prepareStatement("SELECT * FROM MRCONSO LIMIT 5");
@@ -1265,9 +1361,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     public static void main(String[] args) throws Exception {
 	UMLSDatabaseConnection conn = UMLSDatabaseConnection.getConnection(
+	        DatabaseAPI.DRIVERMANAGER,
 	        "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA", "umlsuser",
 	        "3SqQgPOh");
-	conn.init();
 	// UMLSQueryStringValue searchStr = UMLSQueryStringValue
 	// .fromString("Malignant tumour of prostate");
 	// List<SABValue> sabs = new ArrayList<SABValue>();

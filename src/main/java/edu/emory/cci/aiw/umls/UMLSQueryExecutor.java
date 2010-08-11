@@ -15,10 +15,6 @@ import java.util.Set;
  */
 public interface UMLSQueryExecutor {
 
-    public void init() throws Exception;
-
-    public void finish() throws Exception;
-
     /**
      * Retrieves the Concept Unique Identifiers for the given search UID,
      * optionally restricted to the given dictionaries. The search is for an
