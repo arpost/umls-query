@@ -118,8 +118,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
 	private ResultSet getCUIMult(List<? extends CUIQuerySearchUID> uids,
 	        List<SABValue> sabs, boolean caseSensitive) {
-		StringBuilder sql = new StringBuilder("select distinct(CUI), ? "
-		        + "from MRCONSO where");
+		StringBuilder sql = new StringBuilder("select distinct(CUI), ");
+		sql.append(uids.get(0).getKeyName());
+		sql.append(" from MRCONSO where");
 		sql.append(caseSensitive ? "BINARY " : " ");
 		sql.append(singletonOrSetClause(uids.get(0).getKeyName(), uids.size()));
 
