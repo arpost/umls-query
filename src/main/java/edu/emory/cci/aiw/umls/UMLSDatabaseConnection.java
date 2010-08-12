@@ -1,7 +1,6 @@
 package edu.emory.cci.aiw.umls;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,6 +15,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.arp.javautil.arrays.Arrays;
 import org.arp.javautil.sql.DatabaseAPI;
@@ -29,6 +29,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	private final String url;
 	private final String user;
 	private final String password;
+
+	private static void log(Level level, String msg) {
+		UMLSUtil.logger().log(level, msg);
+	}
 
 	private UMLSDatabaseConnection(DatabaseAPI api, String url, String user,
 	        String password) {
@@ -44,13 +48,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	}
 
 	private void setupConn() throws UMLSQueryException {
-		UMLSUtil.logger().log(Level.INFO,
-		        "Attempting to establish database connection...");
+		log(Level.INFO, "Attempting to establish database connection...");
 		try {
 			conn = api.newConnectionSpecInstance(url, user, password)
 			        .getOrCreate();
-			UMLSUtil.logger().log(Level.INFO,
-			        "Connection established with " + url);
+			log(Level.INFO, "Connection established with " + url);
 		} catch (SQLException sqle) {
 			throw new UMLSQueryException(sqle);
 		} catch (InvalidConnectionSpecArguments icsa) {
@@ -59,12 +61,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	}
 
 	private void tearDownConn() throws UMLSQueryException {
-		UMLSUtil.logger().log(Level.INFO,
-		        "Attempting to disconnect from the database...");
+		log(Level.INFO, "Attempting to disconnect from the database...");
 		try {
 			conn.close();
-			UMLSUtil.logger().log(Level.INFO,
-			        "Disconnected from database " + url);
+			log(Level.INFO, "Disconnected from database " + url);
 		} catch (SQLException sqle) {
 			throw new UMLSQueryException(sqle);
 		}
@@ -98,7 +98,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				        .size()));
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 			params.add(uid);
@@ -135,7 +135,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 			        .size()));
 		}
 
-		UMLSUtil.logger().log(Level.FINE, sql.toString());
+		log(Level.FINE, sql.toString());
 
 		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 		params.addAll(uids);
@@ -344,7 +344,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				sql.append(" = ?");
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 			params.add(uid);
@@ -402,7 +402,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				sql.append(" = ?");
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 			params.add(uid);
@@ -451,7 +451,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				sql.append(" = ?");
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 			params.add(uid);
@@ -492,7 +492,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 			sql.append(uid.getKeyName());
 			sql.append(" = ?");
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 			params.add(uid);
@@ -522,7 +522,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 			        .size()));
 		}
 
-		UMLSUtil.logger().log(Level.FINE, sql.toString());
+		log(Level.FINE, sql.toString());
 
 		List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 		// capitalize the first letter of the phrase
@@ -831,7 +831,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				params.add(UMLSQueryStringValue.fromString(rela));
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
 			        params));
@@ -884,7 +884,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				params.add(UMLSQueryStringValue.fromString(rela));
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
 			        params));
@@ -940,7 +940,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				params.add(UMLSQueryStringValue.fromString(rela));
 			}
 
-			UMLSUtil.logger().log(Level.FINE, sql.toString());
+			log(Level.FINE, sql.toString());
 
 			ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
 			        params));
@@ -1219,7 +1219,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				sql.append(" and SAB = ?");
 				params.add(sab);
 			}
-			if (rela != null) {
+			if (rela != null && !rela.equals("")) {
 				sql.append(" and RELA = ?");
 				params.add(UMLSQueryStringValue.fromString(rela));
 			}
@@ -1250,6 +1250,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				if (queIdx == radiusIdx.get(r)) {
 					r++;
 				}
+				queIdx++;
 
 				for (ConceptUID c : adjNodes) {
 					visited.add(c);
@@ -1267,6 +1268,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 			tearDownConn();
 		}
 
+		log(Level.FINEST, "Returning -1");
 		return -1;
 	}
 
@@ -1293,11 +1295,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				sql.append(" and SAB = ?");
 				params.add(sab);
 			}
-			if (rela != null) {
+			if (rela != null && !rela.equals("")) {
 				sql.append(" and RELA = ?");
 				params.add(UMLSQueryStringValue.fromString(rela));
 			}
-			if (rel != null) {
+			if (rel != null && !rel.equals("")) {
 				sql.append(" and REL = ?");
 				params.add(UMLSQueryStringValue.fromString(rel));
 			}
@@ -1347,7 +1349,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
 	private ResultSet executeAndLogQuery(PreparedStatement query)
 	        throws SQLException {
-		UMLSUtil.logger().log(Level.INFO, "Executing query: " + query);
+		log(Level.INFO, "Executing query: " + query);
 		return query.executeQuery();
 	}
 
