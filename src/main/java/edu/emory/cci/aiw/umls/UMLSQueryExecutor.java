@@ -2,6 +2,7 @@ package edu.emory.cci.aiw.umls;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is an API for querying a UMLS database. It allows searching for unique
@@ -553,18 +554,16 @@ public interface UMLSQueryExecutor {
 
 	/**
 	 * Retrieves all the SAB dictionaries whose descriptions contain the search
-	 * string. The result is a mapping from SAB to the full description of the
-	 * SAB.
+	 * string. The result is a set of SABs.
 	 * 
 	 * @param term
 	 *            the search terms to match in the SAB descriptions
-	 * @return a map from SAB values to their full descriptions
+	 * @return a <code>Set</code> of <code>SABValue</code> objects.
 	 * @throws UMLSQueryException
 	 *             if something goes wrong during the query execution. Any
 	 *             lower-level exceptions will be passed along.
 	 */
-	public Map<SABValue, String> getAvailableSAB(String term)
-	        throws UMLSQueryException;
+	public Set<SABValue> getAvailableSAB(String term) throws UMLSQueryException;
 
 	/**
 	 * Retrieves the distance from a specified Concept Unique Identifier (CUI)

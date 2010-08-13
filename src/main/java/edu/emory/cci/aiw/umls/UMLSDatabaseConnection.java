@@ -500,7 +500,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 			ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
 			List<SABValue> sabs = new ArrayList<SABValue>();
 			while (r.next()) {
-				sabs.add(SABValue.fromString(r.getString(1)));
+				sabs.add(SABValue.withName(r.getString(1)));
 			}
 			return sabs;
 		} catch (SQLException sqle) {
@@ -1155,7 +1155,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 	 * )
 	 */
 	@Override
-	public Map<SABValue, String> getAvailableSAB(String description)
+	public Set<SABValue> getAvailableSAB(String description)
 	        throws UMLSQueryException {
 
 		try {
@@ -1170,11 +1170,13 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 				query.setString(1, "%" + description + "%");
 			}
 			ResultSet rs = executeAndLogQuery(query);
-			Map<SABValue, String> result = new HashMap<SABValue, String>();
+			Set<SABValue> result = new HashSet<SABValue>();
 			while (rs.next()) {
-				SABValue sab = SABValue.fromString(rs.getString(1));
-				String son = rs.getString(2);
-				result.put(sab, son);
+				SABValue sab = SABValue.withNameAndDescription(rs.getString(1),
+				        rs.getString(2));
+				System.out.println("hashCode: " + sab + ": " + sab.hashCode());
+				result.add(sab);
+				System.out.println(result.size());
 			}
 			return result;
 		} catch (SQLException sqle) {

@@ -26,4 +26,20 @@ final class MapToIdResult<T extends MapToIdQuerySearchUID> {
 		return uid.getKeyName() + ": " + uid.getValue() + "\t"
 		        + str.getKeyName() + ": " + str.getValue();
 	}
+
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null)
+			return false;
+		if (this.getClass() != o.getClass())
+			return false;
+		return uid.equals(((MapToIdResult<?>) o).getUid())
+		        && str.equals(((MapToIdResult<?>) o).getStr());
+
+	}
+	
+	public int hashCode() {
+		return (uid.getValue() + str.getValue()).hashCode();
+	}
 }

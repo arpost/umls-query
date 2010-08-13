@@ -1,29 +1,39 @@
 package edu.emory.cci.aiw.umls;
 
 public final class SABValue extends AbstractUMLSSearchUID {
-	private String sab;
-	
-	private SABValue(String sab) {
-		super(sab);
-		this.sab = sab;
+	private String name;
+	private String description;
+
+	private SABValue(String name, String description) {
+		super(name);
+		this.name = name;
+		this.description = description;
 	}
-	
+
 	public String getKeyName() {
 		return "SAB";
 	}
-	
-	public static SABValue fromString(String sab) {
-		return new SABValue(sab);
+
+	public static SABValue withName(String name) {
+		return new SABValue(name, "");
 	}
-	
-	public String getSABValue() {
-		return this.sab;
+
+	public static SABValue withNameAndDescription(String name, String description) {
+		return new SABValue(name, description);
 	}
-	
+
+	public String getName() {
+		return this.name;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
 	public String toString() {
-		return getSABValue();
+		return getName();
 	}
-	
+
 	public boolean equals(Object o) {
 		if (o instanceof SABValue) {
 			return this.getValue().equals(((SABValue) o).getValue());
