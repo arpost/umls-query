@@ -1,7 +1,8 @@
 package edu.emory.cci.aiw.umls;
 
 /**
- * Checked exception for malformed UMLS unique identifiers
+ * Checked exception for malformed UMLS unique identifiers. This exception is
+ * thrown by methods that create a UID object from a string.
  * 
  * @author Michel Mansour
  * 

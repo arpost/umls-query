@@ -1,5 +1,12 @@
 package edu.emory.cci.aiw.umls;
 
+/**
+ * Represents a LAT in various UMLS queries. LAT values must be exactly 3
+ * characters long.
+ * 
+ * @author Michel Mansour
+ * 
+ */
 public final class LATValue extends AbstractUMLSSearchUID {
     private char lat1;
     private char lat2;
@@ -17,10 +24,12 @@ public final class LATValue extends AbstractUMLSSearchUID {
         this(latStr.charAt(0), latStr.charAt(1), latStr.charAt(2));
     }
 
+    @Override
     public String getKeyName() {
         return "LAT";
     }
 
+    @Override
     public boolean equals(Object o) {
         if (o instanceof LATValue) {
             return this.getValue().equals(((LATValue) o).getValue());
@@ -28,6 +37,17 @@ public final class LATValue extends AbstractUMLSSearchUID {
         return false;
     }
 
+    /**
+     * Creates and returns a new <code>LATValue</code> with the given string as
+     * the value. If the string argument is not exactly 3 characters, a
+     * <code>MalformedUMLSUniqueIdentifierException</code> is thrown.
+     * 
+     * @param latStr
+     *            the string representing the LAT to be created
+     * @return a <code>LATValue</code> whose value is the given string
+     * @throws MalformedUMLSUniqueIdentifierException
+     *             if the string argument does not have length 3
+     */
     public static LATValue fromString(String latStr)
             throws MalformedUMLSUniqueIdentifierException {
         if (latStr.length() != 3) {
@@ -38,6 +58,7 @@ public final class LATValue extends AbstractUMLSSearchUID {
         }
     }
 
+    @Override
     public String toString() {
         return new StringBuilder().append(lat1).append(lat2).append(lat3)
                 .toString();

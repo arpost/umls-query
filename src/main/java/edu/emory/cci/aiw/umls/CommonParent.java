@@ -1,5 +1,17 @@
 package edu.emory.cci.aiw.umls;
 
+/**
+ * Contains all relevant information retrieved from a
+ * {@link UMLSQueryExecutor.getCommonParent} query. This includes the parent
+ * AUI, the two children, and the number of links from the parent to each child.
+ * The generic parameter is the type of the children.
+ * 
+ * @author Michel Mansour
+ * 
+ * @param <T>
+ *            the type of the children, which must implement the
+ *            {@link ParentsQuerySearchUID} marker interface.
+ */
 public final class CommonParent<T extends ParentsQuerySearchUID> {
     private final AtomUID parent;
     private final T child1;

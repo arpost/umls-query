@@ -1,6 +1,17 @@
 package edu.emory.cci.aiw.umls;
 
-final class MapToIdResult<T extends MapToIdQuerySearchUID> {
+/**
+ * Container class for the result of a mapToId UMLS query, via one of the
+ * mapToId* methods in the API. It contains a unique identifier and the string
+ * value it mapped from.
+ * 
+ * @author Michel Mansour
+ * 
+ * @param <T>
+ *            the type of the unique identifier, which must implement the
+ *            <code>MapToIdQuerySearchUID</code> interface
+ */
+public final class MapToIdResult<T extends MapToIdQuerySearchUID> {
     private final T uid;
     private final UMLSQueryStringValue str;
 
@@ -9,11 +20,19 @@ final class MapToIdResult<T extends MapToIdQuerySearchUID> {
         this.str = str;
     }
 
-    T getUid() {
+    /**
+     * Gets the unique identifier
+     * @return unique identifier of type <code>T</code>
+     */
+    public T getUid() {
         return this.uid;
     }
 
-    UMLSQueryStringValue getStr() {
+    /**
+     * Gets the string value
+     * @return a <code>UMLSQueryStringValue</code>
+     */
+    public UMLSQueryStringValue getStr() {
         return this.str;
     }
 
@@ -22,11 +41,13 @@ final class MapToIdResult<T extends MapToIdQuerySearchUID> {
         return new MapToIdResult<U>(uid, str);
     }
 
+    @Override
     public String toString() {
         return uid.getKeyName() + ": " + uid.getValue() + "\t"
                 + str.getKeyName() + ": " + str.getValue();
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -39,6 +60,7 @@ final class MapToIdResult<T extends MapToIdQuerySearchUID> {
 
     }
 
+    @Override
     public int hashCode() {
         return (uid.getValue() + str.getValue()).hashCode();
     }

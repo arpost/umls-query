@@ -835,7 +835,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
                     params));
             while (rs.next()) {
-                PTR ptr = new PTR(rs.getString(1));
+                PTR ptr = new PTR(rs.getString(1), uid);
                 AtomUID aui = AtomUID.fromString(rs.getString(2));
                 result.put(ptr, aui);
             }
@@ -888,9 +888,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
                     params));
             while (rs.next()) {
-                PTR ptr = new PTR(rs.getString(1));
                 AtomUID paui = AtomUID.fromString(rs.getString(2));
                 AtomUID byAui = AtomUID.fromString(rs.getString(3));
+                PTR ptr = new PTR(rs.getString(1), byAui);
                 result.put(byAui, new HashMap<PTR, AtomUID>());
                 result.get(byAui).put(ptr, paui);
             }
@@ -944,9 +944,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
                     params));
             while (rs.next()) {
-                PTR ptr = new PTR(rs.getString(1));
                 AtomUID paui = AtomUID.fromString(rs.getString(2));
                 ConceptUID byCui = ConceptUID.fromString(rs.getString(3));
+                PTR ptr = new PTR(rs.getString(1), byCui);
                 result.put(byCui, new HashMap<PTR, AtomUID>());
                 result.get(byCui).put(ptr, paui);
             }
