@@ -131,7 +131,7 @@ public interface UMLSQueryExecutor {
      * strings, optionally restricted to a list of dictionaries. The result is a
      * map from the given strings to their respective CUI matches.
      * 
-     * @param auis
+     * @param strings
      *            the list of text strings to search for
      * @param sabs
      *            the list of SAB dictionaries to restrict the search to; if

@@ -8,5 +8,19 @@ package edu.emory.cci.aiw.umls;
  * 
  */
 public enum UMLSPreferred {
-    NO_PREFERENCE, NOT_PREFERRED, PREFERRED;
+    /**
+     * Signifies neither preferred nor not preferred. Equivalent to leaving the
+     * preference parameter out of the query.
+     */
+    NO_PREFERENCE, 
+    
+    /**
+     * Equivalent to setting the preference parameter to 'no'.
+     */
+    NOT_PREFERRED, 
+    
+    /**
+     * Equivalent to setting the preference parameter to 'yes'
+     */
+    PREFERRED;
 }

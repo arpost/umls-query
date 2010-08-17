@@ -10,9 +10,13 @@ import java.util.List;
  * 
  * In both cases, the immediate parent of the UID under consideration is the
  * right-most element, and the root AUI is the left-most element. An example of
- * the string representation is below:
- * 
+ * the string representation is:
+ * <p>
  * <code>A3684559.A3886745.A3456474.A3456963.A3459284.A3292887.A16354045</code>
+ * <p>
+ * In this example, <code>A16354045</code> is the direct parent of the AUI under
+ * consideration; its direct parent is <code>A3292887</code>; and so on; the
+ * root is <code>A3684559</code>.
  * 
  * @author Michel Mansour
  * 
@@ -46,6 +50,7 @@ public final class PTR implements Comparable<PTR> {
 
     /**
      * Gets the child UID whose parents are represented in this instance
+     * 
      * @return a <code>ParentsQuerySearchUID</code>
      */
     public ParentsQuerySearchUID getChild() {
@@ -91,7 +96,10 @@ public final class PTR implements Comparable<PTR> {
         return this.ptrStr.hashCode();
     }
 
-    @Override
+    /**
+     * Compares the <code>String</code> representations of the <code>PTR</code>s.
+     * @see java.lang.Comparable#compareTo(Object)
+     */
     public int compareTo(PTR ptr) {
         return this.ptrStr.compareTo(ptr.ptrStr);
     }

@@ -20,6 +20,16 @@ import org.arp.javautil.arrays.Arrays;
 import org.arp.javautil.sql.DatabaseAPI;
 import org.arp.javautil.sql.InvalidConnectionSpecArguments;
 
+/**
+ * A database-baked implementation of the {@link UMLSQueryExecutor} interface.
+ * An instance is obtained by calling the static method {@link #getConnection} with the
+ * parameters for accessing the database. Additionally, the caller must pass in
+ * the database API type. Once an instance has been obtained, any of the queries
+ * defined in the {@link UMLSQueryExecutor} interface may be executed.
+ * 
+ * @author Michel Mansour
+ * 
+ */
 public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     private Connection conn;
@@ -41,6 +51,26 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         this.password = password;
     }
 
+    /**
+     * Returns a <code>UMLSDatabaseConnection</code> for querying a UMLS
+     * database. Callers must specify the location and access information for
+     * the database, as well as the database API type.
+     * 
+     * @param api
+     *            the Java database API to use. An instance of the
+     *            {@link DatabaseAPI} enum, which provides the
+     *            {@link java.sql.DriverMananger} and
+     *            {@link javax.sql.DataSource} methods.
+     * @param url
+     *            the location of the database
+     * @param user
+     *            the username to access the database
+     * @param password
+     *            the password that goes with the username to access the
+     *            database
+     * @return a <code>UMLSDatabaseConnection</code> accessed by the specified
+     *         parameters
+     */
     public static UMLSDatabaseConnection getConnection(DatabaseAPI api,
             String url, String user, String password) {
         return new UMLSDatabaseConnection(api, url, user, password);
@@ -1173,9 +1203,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             while (rs.next()) {
                 SABValue sab = SABValue.withNameAndDescription(rs.getString(1),
                         rs.getString(2));
-                System.out.println("hashCode: " + sab + ": " + sab.hashCode());
                 result.add(sab);
-                System.out.println(result.size());
             }
             return result;
         } catch (SQLException sqle) {
