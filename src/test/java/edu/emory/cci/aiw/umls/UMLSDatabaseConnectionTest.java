@@ -211,18 +211,38 @@ public class UMLSDatabaseConnectionTest {
     }
 
     @Test
-    public void testGetChildrenAUI() {
-
+    public void testGetChildrenAUI() throws Exception {
+        List<AtomUID> children = conn.getChildren(AtomUID
+                .fromString("A3323363"), "isa", null);
+        assertEquals(9, children.size());
+        Set<AtomUID> actual = new HashSet<AtomUID>(children);
+        Set<AtomUID> expected = new HashSet<AtomUID>();
+        expected.add(AtomUID.fromString("A2949514"));
+        expected.add(AtomUID.fromString("A2949516"));
+        expected.add(AtomUID.fromString("A3295134"));
+        expected.add(AtomUID.fromString("A3095622"));
+        expected.add(AtomUID.fromString("A3184304"));
+        expected.add(AtomUID.fromString("A3594641"));
+        expected.add(AtomUID.fromString("A3567685"));
+        expected.add(AtomUID.fromString("A3586937"));
+        expected.add(AtomUID.fromString("A16962310"));
+        assertEquals(expected, actual);
+        
     }
 
     @Test
-    public void testGetCommonChildCUI() {
-
+    public void testGetCommonChildCUI() throws Exception {
+        ConceptUID child = conn.getCommonChild(ConceptUID
+                .fromString("C0376358"), ConceptUID.fromString("C0346554"), "",
+                null);
+        assertEquals(null, child);
     }
 
     @Test
-    public void testGetCommonChildAUI() {
-
+    public void testGetCommonChildAUI() throws Exception {
+        AtomUID child = conn.getCommonChild(AtomUID.fromString("A3261244"),
+                AtomUID.fromString("A3339540"), "", null);
+        assertEquals(null, child);
     }
 
     @Test
