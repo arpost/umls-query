@@ -2,7 +2,7 @@ package edu.emory.cci.aiw.umls;
 
 import java.util.logging.Logger;
 
-public final class UMLSUtil {
+final class UMLSUtil {
     private static class LazyLoggerHolder {
         private static Logger instance = Logger.getLogger(UMLSUtil.class
                 .getPackage().getName());
