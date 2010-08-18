@@ -1,7 +1,7 @@
 package edu.emory.cci.aiw.umls;
 
 /**
- * Represents a SAB dictionary value in a UMLS query, as a name and a
+ * Represents a terminology in a UMLS query, composed of a name and a
  * description.
  * 
  * @author Michel Mansour
@@ -44,8 +44,7 @@ public final class SAB extends AbstractUMLSSearchUID {
      *            the description of the dictionary
      * @return a <code>SABValue</code> with the given name and description
      */
-    public static SAB withNameAndDescription(String name,
-            String description) {
+    public static SAB withNameAndDescription(String name, String description) {
         return new SAB(name, description);
     }
 
