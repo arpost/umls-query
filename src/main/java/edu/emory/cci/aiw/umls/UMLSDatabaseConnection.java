@@ -22,10 +22,10 @@ import org.arp.javautil.sql.InvalidConnectionSpecArguments;
 
 /**
  * A database-baked implementation of the {@link UMLSQueryExecutor} interface.
- * An instance is obtained by calling the static method {@link #getConnection} with the
- * parameters for accessing the database. Additionally, the caller must pass in
- * the database API type. Once an instance has been obtained, any of the queries
- * defined in the {@link UMLSQueryExecutor} interface may be executed.
+ * An instance is obtained by calling the static method {@link #getConnection}
+ * with the parameters for accessing the database. Additionally, the caller must
+ * pass in the database API type. Once an instance has been obtained, any of the
+ * queries defined in the {@link UMLSQueryExecutor} interface may be executed.
  * 
  * @author Michel Mansour
  * 
@@ -107,7 +107,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .CUIQuerySearchUID, edu.emory.cci.aiw.umls.SABValue, boolean)
      */
     @Override
-    public List<ConceptUID> getCUI(CUIQuerySearchUID uid, List<SABValue> sabs,
+    public List<ConceptUID> getCUI(CUIQuerySearchUID uid, List<SAB> sabs,
             boolean caseSensitive) throws UMLSQueryException {
         try {
             setupConn();
@@ -151,7 +151,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     private ResultSet getCUIMult(List<? extends CUIQuerySearchUID> uids,
-            List<SABValue> sabs, boolean caseSensitive) throws SQLException {
+            List<SAB> sabs, boolean caseSensitive) throws SQLException {
         StringBuilder sql = new StringBuilder("select distinct(CUI), ");
         sql.append(uids.get(0).getKeyName());
         sql.append(" from MRCONSO where");
@@ -183,7 +183,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<ConceptUID, List<ConceptUID>> getCUIMultByCUI(
-            List<ConceptUID> cuis, List<SABValue> sabs, boolean caseSensitive)
+            List<ConceptUID> cuis, List<SAB> sabs, boolean caseSensitive)
             throws UMLSQueryException {
         Map<ConceptUID, List<ConceptUID>> result = new HashMap<ConceptUID, List<ConceptUID>>();
 
@@ -218,8 +218,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<AtomUID, List<ConceptUID>> getCUIMultByAUI(List<AtomUID> auis,
-            List<SABValue> sabs, boolean caseSensitive)
-            throws UMLSQueryException {
+            List<SAB> sabs, boolean caseSensitive) throws UMLSQueryException {
         Map<AtomUID, List<ConceptUID>> result = new HashMap<AtomUID, List<ConceptUID>>();
 
         try {
@@ -253,7 +252,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<LexicalUID, List<ConceptUID>> getCUIMultByLUI(
-            List<LexicalUID> luis, List<SABValue> sabs, boolean caseSensitive)
+            List<LexicalUID> luis, List<SAB> sabs, boolean caseSensitive)
             throws UMLSQueryException {
         Map<LexicalUID, List<ConceptUID>> result = new HashMap<LexicalUID, List<ConceptUID>>();
 
@@ -288,7 +287,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<UMLSQueryStringValue, List<ConceptUID>> getCUIMultByString(
-            List<UMLSQueryStringValue> strings, List<SABValue> sabs,
+            List<UMLSQueryStringValue> strings, List<SAB> sabs,
             boolean caseSensitive) throws UMLSQueryException {
         Map<UMLSQueryStringValue, List<ConceptUID>> result = new HashMap<UMLSQueryStringValue, List<ConceptUID>>();
 
@@ -324,7 +323,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<StringUID, List<ConceptUID>> getCUIMultBySUI(
-            List<StringUID> suis, List<SABValue> sabs, boolean caseSensitive)
+            List<StringUID> suis, List<SAB> sabs, boolean caseSensitive)
             throws UMLSQueryException {
         Map<StringUID, List<ConceptUID>> result = new HashMap<StringUID, List<ConceptUID>>();
 
@@ -358,7 +357,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .AUIQuerySearchUID, edu.emory.cci.aiw.umls.SABValue)
      */
     @Override
-    public List<AtomUID> getAUI(AUIQuerySearchUID uid, SABValue sab)
+    public List<AtomUID> getAUI(AUIQuerySearchUID uid, SAB sab)
             throws UMLSQueryException {
         try {
             setupConn();
@@ -405,9 +404,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * edu.emory.cci.aiw.umls.LATValue, edu.emory.cci.aiw.umls.UMLSPreferred)
      */
     @Override
-    public List<UMLSQueryStringValue> getSTR(STRQuerySearchUID uid,
-            SABValue sab, LATValue lat, UMLSPreferred preferred)
-            throws UMLSQueryException {
+    public List<UMLSQueryStringValue> getSTR(STRQuerySearchUID uid, SAB sab,
+            LAT lat, UMLSPreferred preferred) throws UMLSQueryException {
         try {
             setupConn();
             StringBuilder sql = new StringBuilder(
@@ -463,7 +461,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .TUIQuerySearchUID, edu.emory.cci.aiw.umls.SABValue)
      */
     @Override
-    public List<TermUID> getTUI(TUIQuerySearchUID uid, SABValue sab)
+    public List<TermUID> getTUI(TUIQuerySearchUID uid, SAB sab)
             throws UMLSQueryException {
         try {
             setupConn();
@@ -511,8 +509,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .SABQuerySearchUID)
      */
     @Override
-    public List<SABValue> getSAB(SABQuerySearchUID uid)
-            throws UMLSQueryException {
+    public List<SAB> getSAB(SABQuerySearchUID uid) throws UMLSQueryException {
         try {
             setupConn();
 
@@ -527,9 +524,9 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             params.add(uid);
 
             ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
-            List<SABValue> sabs = new ArrayList<SABValue>();
+            List<SAB> sabs = new ArrayList<SAB>();
             while (r.next()) {
-                sabs.add(SABValue.withName(r.getString(1)));
+                sabs.add(SAB.withName(r.getString(1)));
             }
             return sabs;
         } catch (SQLException sqle) {
@@ -539,7 +536,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         }
     }
 
-    private ResultSet mapToId(String phrase, IdType idType, List<SABValue> sabs)
+    private ResultSet mapToId(String phrase, IdType idType, List<SAB> sabs)
             throws SQLException {
 
         StringBuilder sql = new StringBuilder("select distinct(").append(
@@ -631,7 +628,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<String, MapToIdResult<AtomUID>> mapToAUI(String phrase,
-            List<SABValue> sab) throws UMLSQueryException {
+            List<SAB> sab) throws UMLSQueryException {
         Map<String, MapToIdResult<AtomUID>> result = new HashMap<String, MapToIdResult<AtomUID>>();
         try {
             setupConn();
@@ -682,7 +679,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<String, MapToIdResult<ConceptUID>> mapToCUI(String phrase,
-            List<SABValue> sab) throws UMLSQueryException {
+            List<SAB> sab) throws UMLSQueryException {
         Map<String, MapToIdResult<ConceptUID>> result = new HashMap<String, MapToIdResult<ConceptUID>>();
         try {
             setupConn();
@@ -734,7 +731,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<String, MapToIdResult<LexicalUID>> mapToLUI(String phrase,
-            List<SABValue> sab) throws UMLSQueryException {
+            List<SAB> sab) throws UMLSQueryException {
         Map<String, MapToIdResult<LexicalUID>> result = new HashMap<String, MapToIdResult<LexicalUID>>();
         try {
             setupConn();
@@ -786,7 +783,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<String, MapToIdResult<StringUID>> mapToSUI(String phrase,
-            List<SABValue> sab) throws UMLSQueryException {
+            List<SAB> sab) throws UMLSQueryException {
         Map<String, MapToIdResult<StringUID>> result = new HashMap<String, MapToIdResult<StringUID>>();
         try {
             setupConn();
@@ -840,7 +837,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<PTR, AtomUID> getParents(ParentsQuerySearchUID uid, String rela,
-            SABValue sab) throws UMLSQueryException {
+            SAB sab) throws UMLSQueryException {
         Map<PTR, AtomUID> result = new HashMap<PTR, AtomUID>();
         List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
@@ -888,8 +885,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<AtomUID, Map<PTR, AtomUID>> getParentsMultByAUI(
-            List<AtomUID> auis, String rela, SABValue sab)
-            throws UMLSQueryException {
+            List<AtomUID> auis, String rela, SAB sab) throws UMLSQueryException {
 
         Map<AtomUID, Map<PTR, AtomUID>> result = new HashMap<AtomUID, Map<PTR, AtomUID>>();
         List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
@@ -943,7 +939,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public Map<ConceptUID, Map<PTR, AtomUID>> getParentsMultByCUI(
-            List<ConceptUID> cuis, String rela, SABValue sab)
+            List<ConceptUID> cuis, String rela, SAB sab)
             throws UMLSQueryException {
 
         Map<ConceptUID, Map<PTR, AtomUID>> result = new HashMap<ConceptUID, Map<PTR, AtomUID>>();
@@ -1006,8 +1002,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     public <T extends ParentsQuerySearchUID> CommonParent<T> getCommonParent(
-            T uid1, T uid2, String rela, SABValue sab)
-            throws UMLSQueryException {
+            T uid1, T uid2, String rela, SAB sab) throws UMLSQueryException {
         Comparator<PTR> c = new ParentListComparator();
 
         List<PTR> aui1Parents = new ArrayList<PTR>();
@@ -1043,8 +1038,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .umls.ConceptUID, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
      */
     @Override
-    public List<ConceptUID> getChildren(ConceptUID cui, String rela,
-            SABValue sab) throws UMLSQueryException {
+    public List<ConceptUID> getChildren(ConceptUID cui, String rela, SAB sab)
+            throws UMLSQueryException {
         List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
         try {
@@ -1086,7 +1081,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .umls.AtomUID, java.lang.String, edu.emory.cci.aiw.umls.SABValue)
      */
     @Override
-    public List<AtomUID> getChildren(AtomUID aui, String rela, SABValue sab)
+    public List<AtomUID> getChildren(AtomUID aui, String rela, SAB sab)
             throws UMLSQueryException {
         List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
@@ -1130,7 +1125,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public AtomUID getCommonChild(AtomUID aui1, AtomUID aui2, String rela,
-            SABValue sab) throws UMLSQueryException {
+            SAB sab) throws UMLSQueryException {
         List<AtomUID> c1 = getChildren(aui1, rela, sab);
         List<AtomUID> c2 = getChildren(aui2, rela, sab);
 
@@ -1158,7 +1153,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public ConceptUID getCommonChild(ConceptUID cui1, ConceptUID cui2,
-            String rela, SABValue sab) throws UMLSQueryException {
+            String rela, SAB sab) throws UMLSQueryException {
         List<ConceptUID> c1 = getChildren(cui1, rela, sab);
         List<ConceptUID> c2 = getChildren(cui2, rela, sab);
 
@@ -1184,7 +1179,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * )
      */
     @Override
-    public Set<SABValue> getAvailableSAB(String description)
+    public Set<SAB> getAvailableSAB(String description)
             throws UMLSQueryException {
 
         try {
@@ -1199,10 +1194,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                 query.setString(1, "%" + description + "%");
             }
             ResultSet rs = executeAndLogQuery(query);
-            Set<SABValue> result = new HashSet<SABValue>();
+            Set<SAB> result = new HashSet<SAB>();
             while (rs.next()) {
-                SABValue sab = SABValue.withNameAndDescription(rs.getString(1),
-                        rs.getString(2));
+                SAB sab = SAB.withNameAndDescription(rs.getString(1), rs
+                        .getString(2));
                 result.add(sab);
             }
             return result;
@@ -1223,7 +1218,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public int getDistBF(ConceptUID cui1, ConceptUID cui2, String rela,
-            SABValue sab, int maxR) throws UMLSQueryException {
+            SAB sab, int maxR) throws UMLSQueryException {
         Queue<ConceptUID> cuiQue = new LinkedList<ConceptUID>();
         Set<ConceptUID> visited = new HashSet<ConceptUID>();
         Map<Integer, Integer> radiusIdx = new HashMap<Integer, Integer>();
@@ -1311,7 +1306,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      */
     @Override
     public List<ConceptUID> getNeighbors(NeighborQuerySearchUID ui,
-            String rela, SABValue sab, String rel) throws UMLSQueryException {
+            String rela, SAB sab, String rel) throws UMLSQueryException {
         List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
 
         try {
@@ -1350,6 +1345,126 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         } finally {
             tearDownConn();
         }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#codeToUID(edu.emory.cci.aiw.
+     * umls.TerminologyCode)
+     */
+    @Override
+    public ConceptUID codeToUID(TerminologyCode code) throws UMLSQueryException {
+        if (code == null || code == null || code.getCode().equals("")
+                || code.getSab() == null) {
+            throw new UMLSQueryException("The code and SAB must not be null");
+        }
+
+        try {
+            setupConn();
+            StringBuilder sql = new StringBuilder(
+                    "select distinct(CUI) from MRCONSO where CODE = ? and SAB = ?");
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(UMLSQueryStringValue.fromString(code.getCode()));
+            params.add(code.getSab());
+            ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+                    params));
+            if (rs.next()) {
+                return ConceptUID.fromString(rs.getString(1));
+            } else {
+                return null;
+            }
+        } catch (SQLException sqle) {
+            throw new UMLSQueryException(sqle);
+        } finally {
+            tearDownConn();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#uidToCode(edu.emory.cci.aiw.
+     * umls.ConceptUID, edu.emory.cci.aiw.umls.SAB)
+     */
+    @Override
+    public List<TerminologyCode> uidToCode(CodeQuerySearchUID uid, SAB sab)
+            throws UMLSQueryException {
+        if (uid == null || sab == null) {
+            throw new UMLSQueryException("The UID and SAB must be non-null");
+        }
+
+        try {
+            setupConn();
+            StringBuilder sql = new StringBuilder(
+                    "select CODE from MRCONSO where ");
+            sql.append(uid.getKeyName());
+            sql.append(" = ? and SAB = ?");
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(uid);
+            params.add(sab);
+
+            ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+                    params));
+            List<TerminologyCode> result = new ArrayList<TerminologyCode>();
+            while (rs.next()) {
+                result.add(TerminologyCode.fromStringAndSAB(rs.getString(1),
+                        sab));
+            }
+            return result;
+        } catch (SQLException sqle) {
+            throw new UMLSQueryException(sqle);
+        } finally {
+            tearDownConn();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#translateCode(edu.emory.cci.
+     * aiw.umls.TerminologyCode, edu.emory.cci.aiw.umls.SAB)
+     */
+    @Override
+    public List<TerminologyCode> translateCode(TerminologyCode from, SAB to)
+            throws UMLSQueryException {
+        if (from == null || from.getCode() == null || from.getCode().equals("")
+                || from.getSab() == null || to == null) {
+            throw new UMLSQueryException("Code and SAB must not be null");
+        }
+
+        try {
+            setupConn();
+            StringBuilder sql = new StringBuilder(
+                    "select b.CODE from MRCONSO a, MRCONSO b ");
+            sql
+                    .append("where a.CODE = ? and a.SAB = ? and b.SAB = ? and a.CUI = b.CUI");
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(queryStr(from.getCode()));
+            params.add(from.getSab());
+            params.add(to);
+
+            ResultSet rs = executeAndLogQuery(substParams(sql.toString(),
+                    params));
+            List<TerminologyCode> result = new ArrayList<TerminologyCode>();
+            while (rs.next()) {
+                result.add(TerminologyCode
+                        .fromStringAndSAB(rs.getString(1), to));
+            }
+            return result;
+        } catch (SQLException sqle) {
+
+        } finally {
+            tearDownConn();
+        }
+        return null;
+    }
+
+    private UMLSQueryStringValue queryStr(String str) {
+        return UMLSQueryStringValue.fromString(str);
     }
 
     private String singletonOrSetClause(String uidKeyName, int setSize) {

@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public final class ConceptUID extends AbstractUMLSSearchUID implements
         CUIQuerySearchUID, AUIQuerySearchUID, STRQuerySearchUID,
         TUIQuerySearchUID, SABQuerySearchUID, ParentsQuerySearchUID,
-        NeighborQuerySearchUID, MapToIdQuerySearchUID {
+        NeighborQuerySearchUID, MapToIdQuerySearchUID, CodeQuerySearchUID {
 
     private static Pattern cuidPattern;
 
