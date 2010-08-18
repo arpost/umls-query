@@ -16,7 +16,7 @@ import org.junit.Test;
 
 public class UMLSDatabaseConnectionTest {
     private UMLSDatabaseConnection conn;
-    private List<SABValue> sabs;
+    private List<SAB> sabs;
 
     public UMLSDatabaseConnectionTest() {
 
@@ -37,9 +37,9 @@ public class UMLSDatabaseConnectionTest {
         String url = "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA", user = "umlsuser", pass = "3SqQgPOh";
         this.conn = UMLSDatabaseConnection.getConnection(
                 DatabaseAPI.DRIVERMANAGER, url, user, pass);
-        sabs = new ArrayList<SABValue>();
-        sabs.add(SABValue.withName("SNOMEDCT"));
-        sabs.add(SABValue.withName("RXNORM"));
+        sabs = new ArrayList<SAB>();
+        sabs.add(SAB.withName("SNOMEDCT"));
+        sabs.add(SAB.withName("RXNORM"));
     }
 
     @After
@@ -112,11 +112,11 @@ public class UMLSDatabaseConnectionTest {
 
     @Test
     public void testGetSAB() throws Exception {
-        List<SABValue> sabs = conn.getSAB(UMLSQueryStringValue
+        List<SAB> sabs = conn.getSAB(UMLSQueryStringValue
                 .fromString("prostate"));
         assertEquals(2, sabs.size());
-        Set<SABValue> actual = new HashSet<SABValue>(sabs);
-        Set<SABValue> expected = new HashSet<SABValue>();
+        Set<SAB> actual = new HashSet<SAB>(sabs);
+        Set<SAB> expected = new HashSet<SAB>();
         expected.add(sabs.get(0));
         expected.add(sabs.get(1));
         assertEquals(expected, actual);
@@ -227,7 +227,7 @@ public class UMLSDatabaseConnectionTest {
         expected.add(AtomUID.fromString("A3586937"));
         expected.add(AtomUID.fromString("A16962310"));
         assertEquals(expected, actual);
-        
+
     }
 
     @Test
@@ -247,17 +247,17 @@ public class UMLSDatabaseConnectionTest {
 
     @Test
     public void testGetAvailableSAB() throws Exception {
-        Set<SABValue> actual = conn.getAvailableSAB("SNOMED");
-        Set<SABValue> expected = new HashSet<SABValue>();
-        expected.add(SABValue.withNameAndDescription("SNMI",
+        Set<SAB> actual = conn.getAvailableSAB("SNOMED");
+        Set<SAB> expected = new HashSet<SAB>();
+        expected.add(SAB.withNameAndDescription("SNMI",
                 "SNOMED Clinical Terms, 2009_07_31"));
         expected
-                .add(SABValue
+                .add(SAB
                         .withNameAndDescription(
                                 "SCTSPA",
                                 "SNOMED Terminos Clinicos (SNOMED CT), Edicion en Espanol, Distribucion Internacional, Octubre de 2009, 2009_10_31"));
-        expected.add(SABValue.withNameAndDescription("SNM", "SNOMED-2, 2"));
-        expected.add(SABValue.withNameAndDescription("SNOMEDCT",
+        expected.add(SAB.withNameAndDescription("SNM", "SNOMED-2, 2"));
+        expected.add(SAB.withNameAndDescription("SNOMEDCT",
                 "SNOMED International, 1998"));
         assertEquals(expected, actual);
     }
@@ -271,6 +271,76 @@ public class UMLSDatabaseConnectionTest {
     @Test
     public void testGetNeighbors() {
 
+    }
+
+    @Test
+    public void testUidToCode() throws Exception {
+        SAB sab = SAB.withName("ICD9CM");
+        ConceptUID cui = ConceptUID.fromString("C0271635");
+        List<TerminologyCode> actual = conn.uidToCode(cui, sab);
+
+        List<TerminologyCode> expected = new ArrayList<TerminologyCode>();
+        expected.add(TerminologyCode.fromStringAndSAB("250.0", sab));
+        assertEquals(expected, actual);
+
+        actual.clear();
+        expected.clear();
+
+        sab = SAB.withName("SNOMEDCT");
+        actual = conn.uidToCode(cui, sab);
+        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("190321005", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("190324002", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("190321005", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("190324002", sab));
+        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab));
+
+        assertEquals(expected, actual);
+
+        AtomUID aui = AtomUID.fromString("A8340910");
+        sab = SAB.withName("ICD9CM");
+        actual = conn.uidToCode(aui, sab);
+        expected.clear();
+        expected.add(TerminologyCode.fromStringAndSAB("250.0", sab));
+        assertEquals(expected, actual);
+
+    }
+
+    @Test
+    public void testCodeToUid() throws Exception {
+        ConceptUID expected = ConceptUID.fromString("C0271635");
+        TerminologyCode icd9Code = TerminologyCode.fromStringAndSAB("250.0",
+                SAB.withName("ICD9CM"));
+        TerminologyCode snomedCode = TerminologyCode.fromStringAndSAB(
+                "111552007", SAB.withName("SNOMEDCT"));
+
+        ConceptUID cui = conn.codeToUID(icd9Code);
+        assertEquals(expected, cui);
+
+        cui = conn.codeToUID(snomedCode);
+        assertEquals(expected, cui);
+    }
+
+    @Test
+    public void testTranslateCode() throws Exception {
+        SAB sab1 = SAB.withName("ICD9CM");
+        SAB sab2 = SAB.withName("SNOMEDCT");
+        List<TerminologyCode> actual = conn.translateCode(TerminologyCode
+                .fromStringAndSAB("250.0", sab1), sab2);
+        List<TerminologyCode> expected = new ArrayList<TerminologyCode>();
+        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("190321005", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("190324002", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("190321005", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("190324002", sab2));
+        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab2));        
+        assertEquals(expected, actual);
     }
 
 }
