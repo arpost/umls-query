@@ -7,11 +7,11 @@ package edu.emory.cci.aiw.umls;
  * @author Michel Mansour
  * 
  */
-public final class SABValue extends AbstractUMLSSearchUID {
+public final class SAB extends AbstractUMLSSearchUID {
     private String name;
     private String description;
 
-    private SABValue(String name, String description) {
+    private SAB(String name, String description) {
         super(name);
         this.name = name;
         this.description = description;
@@ -30,8 +30,8 @@ public final class SABValue extends AbstractUMLSSearchUID {
      *            the name of the SAB dictionary
      * @return a <code>SABValue</code> with the given name
      */
-    public static SABValue withName(String name) {
-        return new SABValue(name, "");
+    public static SAB withName(String name) {
+        return new SAB(name, "");
     }
 
     /**
@@ -44,9 +44,9 @@ public final class SABValue extends AbstractUMLSSearchUID {
      *            the description of the dictionary
      * @return a <code>SABValue</code> with the given name and description
      */
-    public static SABValue withNameAndDescription(String name,
+    public static SAB withNameAndDescription(String name,
             String description) {
-        return new SABValue(name, description);
+        return new SAB(name, description);
     }
 
     /**
@@ -74,8 +74,8 @@ public final class SABValue extends AbstractUMLSSearchUID {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof SABValue) {
-            return this.getValue().equals(((SABValue) o).getValue());
+        if (o instanceof SAB) {
+            return this.getValue().equals(((SAB) o).getValue());
         }
         return false;
     }
