@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 /**
  * Represents a String Unique Identifier (SUI) in a UMLS query. SUIs must match
- * the regular expression <code>S\d{7}</code> (the letter 'S' followed by 7
+ * the regular expression <code>S\d{7}</code> (the letter 'S' followed by 7 or
  * digits). Implements several marker interfaces that allow objects of this type
  * to be used as a search key in various UMLS queries.
  * 
@@ -27,7 +27,7 @@ public final class StringUID extends AbstractUMLSSearchUID implements
      * the regex all SUIs must match
      */
     static {
-        suidPattern = Pattern.compile("S\\d{7}");
+        suidPattern = Pattern.compile("S\\d{7,8}");
     }
 
     private StringUID(String suid) {
@@ -37,7 +37,7 @@ public final class StringUID extends AbstractUMLSSearchUID implements
     /**
      * Creates and returns a new <code>StringUID</code> from the given string.
      * The string must match the SUI format, which is given by the regular
-     * expression <code>S\d{7}</code> (the letter 'S' followed by exactly 7
+     * expression <code>S\d{7,8}</code> (the letter 'S' followed by 7 or 8
      * digits). If the string does not match the regex, then a
      * <code>MalformedUMLSUniqueIdentifierException</code> is thrown.
      * 
@@ -55,7 +55,7 @@ public final class StringUID extends AbstractUMLSSearchUID implements
         } else {
             throw new MalformedUMLSUniqueIdentifierException(
                     "String Unique Identifiers must consist of the letter 'S' "
-                            + "followed by 7 digits: " + suid);
+                            + "followed by 7 or 8 digits: " + suid);
         }
     }
 
