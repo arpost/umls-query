@@ -632,4 +632,32 @@ public interface UMLSQueryExecutor {
      */
     public List<TerminologyCode> translateCode(TerminologyCode from, SAB to)
             throws UMLSQueryException;
+
+    /**
+     * Finds the parent codes of the given terminology code with the same
+     * terminology.
+     * 
+     * @param code
+     *            the terminology code whose parents are to be retrieved
+     * @return a list of <code>TerminologyCode</code> objects that are the
+     *         parents of the specified code
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
+     */
+    public List<TerminologyCode> getParentsByCode(TerminologyCode code)
+            throws UMLSQueryException;
+
+    /**
+     * Finds the child codes of the given terminology code in the same
+     * terminology.
+     * 
+     * @param code
+     *            the terminology code whose children are to be retrieved
+     * @return a list <code>TerminologyCode</code> objewcts that are the
+     *         children of the specified code
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
+     */
+    public List<TerminologyCode> getChildrenByCode(TerminologyCode code)
+            throws UMLSQueryException;
 }

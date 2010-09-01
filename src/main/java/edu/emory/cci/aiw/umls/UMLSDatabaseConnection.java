@@ -1456,11 +1456,53 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             }
             return result;
         } catch (SQLException sqle) {
-
+            throw new UMLSQueryException(sqle);
         } finally {
             tearDownConn();
         }
-        return null;
+    }
+
+    @Override
+    public List<TerminologyCode> getChildrenByCode(TerminologyCode code)
+            throws UMLSQueryException {
+        if (code == null || code.getCode().equals("") || code.getSab() == null) {
+            throw new UMLSQueryException("Code and SAB must not be null");
+        }
+
+        setupConn();
+        List<TerminologyCode> childCodes = new ArrayList<TerminologyCode>();
+        List<ConceptUID> childCuis = getChildren(codeToUID(code), "", code
+                .getSab());
+        for (ConceptUID cui : childCuis) {
+            childCodes.addAll(uidToCode(cui, code.getSab()));
+        }
+
+        tearDownConn();
+
+        return childCodes;
+    }
+
+    @Override
+    public List<TerminologyCode> getParentsByCode(TerminologyCode code)
+            throws UMLSQueryException {
+        if (code == null || code.getCode().equals("") || code.getSab() == null) {
+            throw new UMLSQueryException("Code and SAB must not be null");
+        }
+
+        List<TerminologyCode> parentCodes = new ArrayList<TerminologyCode>();
+        setupConn();
+
+        Map<PTR, AtomUID> parentAuis = getParents(codeToUID(code), "", code
+                .getSab());
+        for (AtomUID aui : parentAuis.values()) {
+            for (ConceptUID cui : getCUI(aui, Collections
+                    .<SAB> singletonList(code.getSab()), false)) {
+                parentCodes.addAll(uidToCode(cui, code.getSab()));
+            }
+        }
+
+        tearDownConn();
+        return parentCodes;
     }
 
     private UMLSQueryStringValue queryStr(String str) {
@@ -1497,7 +1539,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         return query.executeQuery();
     }
 
-    public void testQuery() throws SQLException {
+    private void testQuery() throws SQLException {
         PreparedStatement stmt = conn
                 .prepareStatement("SELECT * FROM MRCONSO LIMIT 5");
         ResultSet r = stmt.executeQuery();
