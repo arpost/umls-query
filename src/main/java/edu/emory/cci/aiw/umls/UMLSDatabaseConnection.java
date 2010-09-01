@@ -1052,7 +1052,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                 sql.append(" and MRHIER.SAB = ?");
                 params.add(sab);
             }
-            if (rela != null) {
+            if (rela != null && !rela.equals("")) {
                 sql.append(" and MRHIER.RELA = ?");
                 params.add(UMLSQueryStringValue.fromString(rela));
             }
@@ -1399,7 +1399,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         try {
             setupConn();
             StringBuilder sql = new StringBuilder(
-                    "select CODE from MRCONSO where ");
+                    "select distinct(CODE) from MRCONSO where ");
             sql.append(uid.getKeyName());
             sql.append(" = ? and SAB = ?");
             List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
@@ -1489,9 +1489,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             throw new UMLSQueryException("Code and SAB must not be null");
         }
 
-        List<TerminologyCode> parentCodes = new ArrayList<TerminologyCode>();
         setupConn();
-
+        List<TerminologyCode> parentCodes = new ArrayList<TerminologyCode>();
         Map<PTR, AtomUID> parentAuis = getParents(codeToUID(code), "", code
                 .getSab());
         for (AtomUID aui : parentAuis.values()) {
@@ -1500,7 +1499,6 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                 parentCodes.addAll(uidToCode(cui, code.getSab()));
             }
         }
-
         tearDownConn();
         return parentCodes;
     }
@@ -1537,14 +1535,5 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             throws SQLException {
         log(Level.INFO, "Executing query: " + query);
         return query.executeQuery();
-    }
-
-    private void testQuery() throws SQLException {
-        PreparedStatement stmt = conn
-                .prepareStatement("SELECT * FROM MRCONSO LIMIT 5");
-        ResultSet r = stmt.executeQuery();
-        while (r.next()) {
-            System.out.println(r.getString(1));
-        }
     }
 }
