@@ -3,6 +3,7 @@ package edu.emory.cci.aiw.umls;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,9 @@ import org.junit.Test;
 public class UMLSDatabaseConnectionTest {
     private UMLSDatabaseConnection conn;
     private List<SAB> sabs;
+
+    private final SAB ICD9SAB = SAB.withName("ICD9CM");
+    private final SAB SNOMEDCTSAB = SAB.withName("SNOMEDCT");
 
     public UMLSDatabaseConnectionTest() {
 
@@ -291,12 +295,7 @@ public class UMLSDatabaseConnectionTest {
         expected.add(TerminologyCode.fromStringAndSAB("111552007", sab));
         expected.add(TerminologyCode.fromStringAndSAB("190321005", sab));
         expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
-        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
         expected.add(TerminologyCode.fromStringAndSAB("190324002", sab));
-        expected.add(TerminologyCode.fromStringAndSAB("190321005", sab));
-        expected.add(TerminologyCode.fromStringAndSAB("154674007", sab));
-        expected.add(TerminologyCode.fromStringAndSAB("190324002", sab));
-        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab));
 
         assertEquals(expected, actual);
 
@@ -339,8 +338,36 @@ public class UMLSDatabaseConnectionTest {
         expected.add(TerminologyCode.fromStringAndSAB("190321005", sab2));
         expected.add(TerminologyCode.fromStringAndSAB("154674007", sab2));
         expected.add(TerminologyCode.fromStringAndSAB("190324002", sab2));
-        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab2));        
+        expected.add(TerminologyCode.fromStringAndSAB("111552007", sab2));
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testGetChildrenByCode() throws Exception {
+        List<TerminologyCode> expected = new ArrayList<TerminologyCode>();
+        expected.add(TerminologyCode.fromStringAndSAB("250.00", ICD9SAB));
+        expected.add(TerminologyCode.fromStringAndSAB("250.01", ICD9SAB));
+        expected.add(TerminologyCode.fromStringAndSAB("250.02", ICD9SAB));
+        expected.add(TerminologyCode.fromStringAndSAB("250.03", ICD9SAB));
+
+        List<TerminologyCode> actual = conn.getChildrenByCode(TerminologyCode
+                .fromStringAndSAB("250.0", ICD9SAB));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetParentsByCode() throws Exception {
+        List<TerminologyCode> expected = Collections
+                .<TerminologyCode> singletonList(TerminologyCode
+                        .fromStringAndSAB("250", ICD9SAB));
+        List<TerminologyCode> actual = conn.getParentsByCode(TerminologyCode
+                .fromStringAndSAB("250.0", ICD9SAB));
+        assertEquals(expected, actual);
+
+        expected = Collections.<TerminologyCode> singletonList(TerminologyCode
+                .fromStringAndSAB("249-259.99", ICD9SAB));
+        actual = conn.getParentsByCode(TerminologyCode.fromStringAndSAB("250",
+                ICD9SAB));
+        assertEquals(expected, actual);
+    }
 }
