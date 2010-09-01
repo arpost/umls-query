@@ -41,6 +41,10 @@ public final class TerminologyCode {
         return sab;
     }
     
+    public String toString() {
+        return code + " in " + sab.getName();
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (o instanceof TerminologyCode) {
