@@ -108,10 +108,12 @@ public class UMLSDatabaseConnectionTest {
 
     @Test
     public void testGetTUI() throws Exception {
-        List<TermUID> tuis = conn.getTUI(UMLSQueryStringValue
+        List<SemanticType> tuis = conn.getSemanticType(UMLSQueryStringValue
                 .fromString("Malignant tumour of prostate"), sabs.get(0));
         assertEquals(1, tuis.size());
-        assertEquals(TermUID.fromString("T191"), tuis.get(0));
+        System.out.println(tuis.get(0));
+        assertEquals(SemanticType.withTUIAndType(TermUID.fromString("T191"),
+                "Neoplastic Process"), tuis.get(0));
     }
 
     @Test

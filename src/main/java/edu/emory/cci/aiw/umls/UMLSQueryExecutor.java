@@ -187,22 +187,23 @@ public interface UMLSQueryExecutor {
             LAT lat, UMLSPreferred preferred) throws UMLSQueryException;
 
     /**
-     * Retrieves the Term Unique Identifiers (TUIs) for the given search values,
-     * optionally restricted to the given SAB dictionary. The acceptable search
-     * types are: Concept Unique Identifier (CUI), Atom Unique Identifier (AUI),
-     * String Unique Identifier (SUI), Lexical Unique Identifier (LUI), and any
-     * text string. A list of TUI values matching the search term is returned.
+     * Retrieves the semantic type for the given search values, optionally
+     * restricted to the given SAB dictionary. The acceptable search types are:
+     * Concept Unique Identifier (CUI), Atom Unique Identifier (AUI), String
+     * Unique Identifier (SUI), Lexical Unique Identifier (LUI), and any text
+     * string. A list of semantic types matching the search term is returned.
      * 
      * @param uid
      *            the unique identifier or text string to search for
      * @param sab
      *            SAB dictionary to restrict the search to; if null, all
      *            dictionaries are searched
-     * @return a list of TUI values matching the search parameter
+     * @return a list of {@link SemanticType} values matching the search
+     *         parameter
      * @throws UMLSQueryException
      *             if something goes wrong during the query execution
      */
-    public List<TermUID> getTUI(TUIQuerySearchUID uid, SAB sab)
+    public List<SemanticType> getSemanticType(TUIQuerySearchUID uid, SAB sab)
             throws UMLSQueryException;
 
     /**

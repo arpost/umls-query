@@ -461,13 +461,13 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      * .TUIQuerySearchUID, edu.emory.cci.aiw.umls.SABValue)
      */
     @Override
-    public List<TermUID> getTUI(TUIQuerySearchUID uid, SAB sab)
+    public List<SemanticType> getSemanticType(TUIQuerySearchUID uid, SAB sab)
             throws UMLSQueryException {
         try {
             setupConn();
 
             StringBuilder sql = new StringBuilder(
-                    "select distinct(TUI) from MRCONSO a, MRSTY b "
+                    "select distinct(TUI), STY from MRCONSO a, MRSTY b "
                             + "where a.CUI = b.CUI and ");
             sql.append(uid.getKeyName());
             sql.append(" = ?");
@@ -487,11 +487,12 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             }
 
             ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
-            List<TermUID> tuis = new ArrayList<TermUID>();
+            List<SemanticType> types = new ArrayList<SemanticType>();
             while (r.next()) {
-                tuis.add(TermUID.fromString(r.getString(1)));
+                types.add(SemanticType.withTUIAndType(TermUID.fromString(r
+                        .getString(1)), r.getString(2)));
             }
-            return tuis;
+            return types;
         } catch (SQLException sqle) {
             throw new UMLSQueryException(sqle);
         } catch (MalformedUMLSUniqueIdentifierException muuie) {
