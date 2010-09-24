@@ -468,7 +468,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
             StringBuilder sql = new StringBuilder(
                     "select distinct(TUI), STY from MRCONSO a, MRSTY b "
-                            + "where a.CUI = b.CUI and ");
+                            + "where a.CUI = b.CUI and a.");
             sql.append(uid.getKeyName());
             sql.append(" = ?");
 
@@ -497,6 +497,40 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             throw new UMLSQueryException(sqle);
         } catch (MalformedUMLSUniqueIdentifierException muuie) {
             throw new UMLSQueryException(muuie);
+        } finally {
+            tearDownConn();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getSemanticTypeForTerm(edu.emory
+     * .cci.aiw.umls.TerminologyCode)
+     */
+    @Override
+    public SemanticType getSemanticTypeForTerm(TerminologyCode code)
+            throws UMLSQueryException {
+        try {
+            validateCode(code);
+            setupConn();
+
+            SemanticType result = null;
+            String sql = "select distinct(TUI), STY from MRCONSO a, MRSTY b where"
+                    + " a.CUI = b.CUI and a.CODE = ? and a.SAB = ?";
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(queryStr(code.getCode()));
+            params.add(code.getSab());
+
+            ResultSet r = executeAndLogQuery(substParams(sql, params));
+            if (r.next()) {
+                result = SemanticType.withTUIAndType(TermUID.fromString(r
+                        .getString(1)), r.getString(2));
+            }
+            return result;
+        } catch (SQLException sqle) {
+            throw new UMLSQueryException(sqle);
         } finally {
             tearDownConn();
         }
@@ -1516,17 +1550,52 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
             String result = "";
             String sql = new String(
-                    "select MRCONSO.STR from MRRANK, MRCONSO where " +
-                    "MRRANK.TTY = MRCONSO.TTY and MRRANK.SAB = MRCONSO.SAB and " +
-            "MRCONSO.CODE = ? and MRCONSO.SAB = ? having max(MRRANK.RANK)");
+                    "select MRCONSO.STR from MRRANK, MRCONSO where "
+                            + "MRRANK.TTY = MRCONSO.TTY and MRRANK.SAB = MRCONSO.SAB and "
+                            + "MRCONSO.CODE = ? and MRCONSO.SAB = ? having max(MRRANK.RANK)");
             List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
             params.add(queryStr(code.getCode()));
             params.add(code.getSab());
 
             ResultSet rs = executeAndLogQuery(substParams(sql, params));
-            while (rs.next()) {
+            if (rs.next()) {
                 result = rs.getString(1);
             }
+            return result;
+        } catch (SQLException sqle) {
+            throw new UMLSQueryException(sqle);
+        } finally {
+            tearDownConn();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getTermDefinition(edu.emory.
+     * cci.aiw.umls.TerminologyCode)
+     */
+    @Override
+    public String getTermDefinition(TerminologyCode code)
+            throws UMLSQueryException {
+        try {
+            validateCode(code);
+            setupConn();
+
+            String result = "";
+            String sql = "select distinct(MRDEF.DEF) from MRDEF, MRCONSO where "
+                    + "MRDEF.CUI = MRCONSO.CUI and MRDEF.SAB = MRCONSO.SAB and "
+                    + "MRCONSO.SAB = ? and MRCONSO.CODE = ?";
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(code.getSab());
+            params.add(queryStr(code.getCode()));
+
+            ResultSet rs = executeAndLogQuery(substParams(sql, params));
+            if (rs.next()) {
+                result = rs.getString(1);
+            }
+
             return result;
         } catch (SQLException sqle) {
             throw new UMLSQueryException(sqle);

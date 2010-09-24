@@ -374,10 +374,38 @@ public class UMLSDatabaseConnectionTest {
     }
 
     @Test
+    public void testGetSemanticType() throws Exception {
+        List<SemanticType> expected = new ArrayList<SemanticType>();
+        expected.add(SemanticType.withTUIAndType(TermUID.fromString("T047"),
+                "Disease or Syndrome"));
+
+        List<SemanticType> actual = conn.getSemanticType(ConceptUID
+                .fromString("C0271635"), ICD9SAB);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetSemanticTypeForTerm() throws Exception {
+        SemanticType expected = SemanticType.withTUIAndType(TermUID
+                .fromString("T047"), "Disease or Syndrome");
+        SemanticType actual = conn.getSemanticTypeForTerm(TerminologyCode
+                .fromStringAndSAB("250.0", ICD9SAB));
+        assertEquals(expected, actual);
+    }
+
+    @Test
     public void testGetPreferredName() throws Exception {
         String expected = "Dipalmitoylphosphatidylcholine";
         String actual = conn.getPreferredName(TerminologyCode.fromStringAndSAB(
                 "102735002", SNOMEDCTSAB));
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetTermDefinition() throws Exception {
+        String expected = "Any disease of sudden onset AND/OR short duration";
+        String actual = conn.getTermDefinition(TerminologyCode
+                .fromStringAndSAB("2704003", SNOMEDCTSAB));
         assertEquals(expected, actual);
     }
 }

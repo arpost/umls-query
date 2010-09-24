@@ -207,6 +207,18 @@ public interface UMLSQueryExecutor {
             throws UMLSQueryException;
 
     /**
+     * Retrieves the semantic type for the given terminology-specific code
+     * 
+     * @param code
+     *            the terminology-specific code to use in the search
+     * @return a {@link SemanticType} value matching the code
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
+     */
+    public SemanticType getSemanticTypeForTerm(TerminologyCode code)
+            throws UMLSQueryException;
+
+    /**
      * Retrieves the SAB dictionaries the given unique identifier or text string
      * belongs to. The search is for an exact match. The acceptable search types
      * are: Concept Unique Identifier (CUI), Atom Unique Identifier (AUI),
@@ -654,8 +666,8 @@ public interface UMLSQueryExecutor {
      * 
      * @param code
      *            the terminology code whose children are to be retrieved
-     * @return a list <code>TerminologyCode</code> objewcts that are the
-     *         children of the specified code
+     * @return a list <code>TerminologyCode</code> objects that are the children
+     *         of the specified code
      * @throws UMLSQueryException
      *             if something goes wrong during query execution
      */
@@ -669,7 +681,21 @@ public interface UMLSQueryExecutor {
      * @param code
      *            the terminology-specific code to search for
      * @return the preferred name of the term, as a <code>String</code>
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
      */
     public String getPreferredName(TerminologyCode code)
+            throws UMLSQueryException;
+
+    /**
+     * Finds the definition of the given terminology-specific code
+     * 
+     * @param code
+     *            the code to search for
+     * @return the definition of the code, as a <code>String</code>
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
+     */
+    public String getTermDefinition(TerminologyCode code)
             throws UMLSQueryException;
 }
