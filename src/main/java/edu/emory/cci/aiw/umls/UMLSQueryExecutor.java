@@ -661,4 +661,15 @@ public interface UMLSQueryExecutor {
      */
     public List<TerminologyCode> getChildrenByCode(TerminologyCode code)
             throws UMLSQueryException;
+
+    /**
+     * Finds the preferred name of the given terminology-specific code. The
+     * preferred name is the one whose term type has the highest ranking.
+     * 
+     * @param code
+     *            the terminology-specific code to search for
+     * @return the preferred name of the term, as a <code>String</code>
+     */
+    public String getPreferredName(TerminologyCode code)
+            throws UMLSQueryException;
 }

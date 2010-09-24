@@ -1466,9 +1466,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<TerminologyCode> getChildrenByCode(TerminologyCode code)
             throws UMLSQueryException {
-        if (code == null || code.getCode().equals("") || code.getSab() == null) {
-            throw new UMLSQueryException("Code and SAB must not be null");
-        }
+        validateCode(code);
 
         setupConn();
         List<TerminologyCode> childCodes = new ArrayList<TerminologyCode>();
@@ -1486,9 +1484,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     @Override
     public List<TerminologyCode> getParentsByCode(TerminologyCode code)
             throws UMLSQueryException {
-        if (code == null || code.getCode().equals("") || code.getSab() == null) {
-            throw new UMLSQueryException("Code and SAB must not be null");
-        }
+        validateCode(code);
 
         setupConn();
         List<TerminologyCode> parentCodes = new ArrayList<TerminologyCode>();
@@ -1502,6 +1498,47 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         }
         tearDownConn();
         return parentCodes;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getPreferredName(edu.emory.cci
+     * .aiw.umls.TerminologyCode)
+     */
+    @Override
+    public String getPreferredName(TerminologyCode code)
+            throws UMLSQueryException {
+        try {
+            validateCode(code);
+            setupConn();
+
+            String result = "";
+            String sql = new String(
+                    "select MRCONSO.STR from MRRANK, MRCONSO where " +
+                    "MRRANK.TTY = MRCONSO.TTY and MRRANK.SAB = MRCONSO.SAB and " +
+            "MRCONSO.CODE = ? and MRCONSO.SAB = ? having max(MRRANK.RANK)");
+            List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
+            params.add(queryStr(code.getCode()));
+            params.add(code.getSab());
+
+            ResultSet rs = executeAndLogQuery(substParams(sql, params));
+            while (rs.next()) {
+                result = rs.getString(1);
+            }
+            return result;
+        } catch (SQLException sqle) {
+            throw new UMLSQueryException(sqle);
+        } finally {
+            tearDownConn();
+        }
+    }
+
+    private void validateCode(TerminologyCode code) throws UMLSQueryException {
+        if (code == null || code.getCode().equals("") || code.getSab() == null) {
+            throw new UMLSQueryException("Code and SAB must not be null");
+        }
     }
 
     private UMLSQueryStringValue queryStr(String str) {

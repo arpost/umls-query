@@ -372,4 +372,12 @@ public class UMLSDatabaseConnectionTest {
                 ICD9SAB));
         assertEquals(expected, actual);
     }
+
+    @Test
+    public void testGetPreferredName() throws Exception {
+        String expected = "Dipalmitoylphosphatidylcholine";
+        String actual = conn.getPreferredName(TerminologyCode.fromStringAndSAB(
+                "102735002", SNOMEDCTSAB));
+        assertEquals(expected, actual);
+    }
 }
