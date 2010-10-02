@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
+import org.apache.commons.lang.StringUtils;
 
-import org.arp.javautil.arrays.Arrays;
 import org.arp.javautil.sql.DatabaseAPI;
 import org.arp.javautil.sql.InvalidConnectionSpecArguments;
 
@@ -683,7 +683,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     if (p.length == 1 && p[0].length() < 4) {
                         continue;
                     }
-                    String permutedString = Arrays.join(p, " ");
+                    String permutedString = StringUtils.join(p, ' ');
                     matches = (matches(permutedString, mapToId(permutedString,
                             IdType.AUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
@@ -735,7 +735,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     if (p.length == 1 && p[0].length() < 4) {
                         continue;
                     }
-                    String permutedString = Arrays.join(p, " ");
+                    String permutedString = StringUtils.join(p, ' ');
                     matches = (matches(permutedString, mapToId(permutedString,
                             IdType.CUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
@@ -787,7 +787,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     if (p.length == 1 && p[0].length() < 4) {
                         continue;
                     }
-                    String permutedString = Arrays.join(p, " ");
+                    String permutedString = StringUtils.join(p, ' ');
                     matches = (matches(permutedString, mapToId(permutedString,
                             IdType.LUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
@@ -839,7 +839,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     if (p.length == 1 && p[0].length() < 4) {
                         continue;
                     }
-                    String permutedString = Arrays.join(p, " ");
+                    String permutedString = StringUtils.join(p, ' ');
                     matches = (matches(permutedString, mapToId(permutedString,
                             IdType.CUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
@@ -1036,6 +1036,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     }
 
+    @Override
     public <T extends ParentsQuerySearchUID> CommonParent<T> getCommonParent(
             T uid1, T uid2, String rela, SAB sab) throws UMLSQueryException {
         Comparator<PTR> c = new ParentListComparator();
