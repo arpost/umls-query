@@ -77,11 +77,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     private void setupConn() throws UMLSQueryException {
-        log(Level.INFO, "Attempting to establish database connection...");
+        log(Level.FINE, "Attempting to establish database connection...");
         try {
             conn = api.newConnectionSpecInstance(url, user, password)
                     .getOrCreate();
-            log(Level.INFO, "Connection established with " + url);
+            log(Level.FINE, "Connection established with " + url);
         } catch (SQLException sqle) {
             throw new UMLSQueryException(sqle);
         } catch (InvalidConnectionSpecArguments icsa) {
@@ -90,10 +90,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     private void tearDownConn() throws UMLSQueryException {
-        log(Level.INFO, "Attempting to disconnect from the database...");
+        log(Level.FINE, "Attempting to disconnect from the database...");
         try {
             conn.close();
-            log(Level.INFO, "Disconnected from database " + url);
+            log(Level.FINE, "Disconnected from database " + url);
         } catch (SQLException sqle) {
             throw new UMLSQueryException(sqle);
         }
@@ -1641,7 +1641,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     private ResultSet executeAndLogQuery(PreparedStatement query)
             throws SQLException {
-        log(Level.INFO, "Executing query: " + query);
+        log(Level.FINE, "Executing query: " + query);
         return query.executeQuery();
     }
 }
