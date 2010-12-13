@@ -355,6 +355,8 @@ public class UMLSDatabaseConnectionTest {
         List<TerminologyCode> actual = conn.getChildrenByCode(TerminologyCode
                 .fromStringAndSAB("250.0", ICD9SAB));
         assertEquals(expected, actual);
+       
+        // tests an invalid code
     }
 
     @Test

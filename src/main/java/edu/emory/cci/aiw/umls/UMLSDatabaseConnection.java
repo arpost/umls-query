@@ -1505,11 +1505,17 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
         setupConn();
         List<TerminologyCode> childCodes = new ArrayList<TerminologyCode>();
+        ConceptUID cuid = codeToUID(code);
+        if (cuid == null) {
+            throw new UMLSQueryException("No such terminology code: " + code);
+        }
+
         List<ConceptUID> childCuis = getChildren(codeToUID(code), "", code
                 .getSab());
         for (ConceptUID cui : childCuis) {
             childCodes.addAll(uidToCode(cui, code.getSab()));
         }
+
 
         tearDownConn();
 
