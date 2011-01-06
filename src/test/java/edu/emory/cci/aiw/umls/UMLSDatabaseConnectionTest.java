@@ -410,4 +410,17 @@ public class UMLSDatabaseConnectionTest {
                 .fromStringAndSAB("2704003", SNOMEDCTSAB));
         assertEquals(expected, actual);
     }
+    
+    @Test
+    public void testGetTermSubsumption() throws Exception {
+        TerminologyCode c1 = TerminologyCode.fromStringAndSAB("250.02", ICD9SAB);
+        TerminologyCode c2 = TerminologyCode.fromStringAndSAB("250.0", ICD9SAB);
+        TerminologyCode c3 = TerminologyCode.fromStringAndSAB("250", ICD9SAB);
+        
+        assertEquals(1, conn.getTermSubsumption(c1).size());
+        assertEquals(5, conn.getTermSubsumption(c2).size());
+        assertEquals(51, conn.getTermSubsumption(c3).size());
+        
+        System.out.println(conn.getTermSubsumption(c2));
+    }
 }

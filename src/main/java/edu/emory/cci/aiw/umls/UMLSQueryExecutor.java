@@ -675,6 +675,23 @@ public interface UMLSQueryExecutor {
             throws UMLSQueryException;
 
     /**
+     * Retrieves the subsumption of the given terminology code, as a list, in
+     * the same terminology.
+     * 
+     * @param code
+     *            the terminology code whose subsumption is to be retrieved
+     * @return a list of <code>TerminologyCode</code> objects that compose the
+     *         subsumption of the given code
+     * @throws UMLSNoSuchTermException
+     *             if the terminology code doesn't exist in the UMLS
+     * @throws UMLSQueryException
+     *             if something goes wrong during query execution
+     * 
+     */
+    public List<TerminologyCode> getTermSubsumption(TerminologyCode code)
+            throws UMLSNoSuchTermException, UMLSQueryException;
+
+    /**
      * Finds the preferred name of the given terminology-specific code. The
      * preferred name is the one whose term type has the highest ranking.
      * 

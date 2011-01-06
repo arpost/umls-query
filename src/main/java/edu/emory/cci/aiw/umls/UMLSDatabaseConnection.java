@@ -123,8 +123,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
             if (sabs != null && !sabs.isEmpty()) {
                 sql.append(" and ");
-                sql.append(singletonOrSetClause(sabs.get(0).getKeyName(), sabs
-                        .size()));
+                sql.append(singletonOrSetClause(sabs.get(0).getKeyName(),
+                        sabs.size()));
             }
 
             log(Level.FINE, sql.toString());
@@ -160,8 +160,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
         if (sabs != null && !sabs.isEmpty()) {
             sql.append(" and ");
-            sql.append(singletonOrSetClause(sabs.get(0).getKeyName(), sabs
-                    .size()));
+            sql.append(singletonOrSetClause(sabs.get(0).getKeyName(),
+                    sabs.size()));
         }
 
         log(Level.FINE, sql.toString());
@@ -489,8 +489,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             ResultSet r = executeAndLogQuery(substParams(sql.toString(), params));
             List<SemanticType> types = new ArrayList<SemanticType>();
             while (r.next()) {
-                types.add(SemanticType.withTUIAndType(TermUID.fromString(r
-                        .getString(1)), r.getString(2)));
+                types.add(SemanticType.withTUIAndType(
+                        TermUID.fromString(r.getString(1)), r.getString(2)));
             }
             return types;
         } catch (SQLException sqle) {
@@ -525,8 +525,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
             ResultSet r = executeAndLogQuery(substParams(sql, params));
             if (r.next()) {
-                result = SemanticType.withTUIAndType(TermUID.fromString(r
-                        .getString(1)), r.getString(2));
+                result = SemanticType.withTUIAndType(
+                        TermUID.fromString(r.getString(1)), r.getString(2));
             }
             return result;
         } catch (SQLException sqle) {
@@ -579,8 +579,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
         if (sabs != null && !sabs.isEmpty()) {
             sql.append(" and ");
-            sql.append(singletonOrSetClause(sabs.get(0).getKeyName(), sabs
-                    .size()));
+            sql.append(singletonOrSetClause(sabs.get(0).getKeyName(),
+                    sabs.size()));
         }
 
         log(Level.FINE, sql.toString());
@@ -667,14 +667,16 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         Map<String, MapToIdResult<AtomUID>> result = new HashMap<String, MapToIdResult<AtomUID>>();
         try {
             setupConn();
-            Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
-                    IdType.AUI_IDTYPE, sab));
+            Map<String, List<String>> matches = matches(phrase,
+                    mapToId(phrase, IdType.AUI_IDTYPE, sab));
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
-                    result.put(entry.getKey(), MapToIdResult
-                            .<AtomUID> fromUidAndStr(AtomUID.fromString(entry
-                                    .getValue().get(0)), UMLSQueryStringValue
-                                    .fromString(entry.getValue().get(1))));
+                    result.put(
+                            entry.getKey(),
+                            MapToIdResult.<AtomUID> fromUidAndStr(AtomUID
+                                    .fromString(entry.getValue().get(0)),
+                                    UMLSQueryStringValue.fromString(entry
+                                            .getValue().get(1))));
                 }
                 return result;
             } else {
@@ -684,8 +686,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         continue;
                     }
                     String permutedString = StringUtils.join(p, ' ');
-                    matches = (matches(permutedString, mapToId(permutedString,
-                            IdType.AUI_IDTYPE, sab)));
+                    matches = (matches(permutedString,
+                            mapToId(permutedString, IdType.AUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
@@ -718,8 +720,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         Map<String, MapToIdResult<ConceptUID>> result = new HashMap<String, MapToIdResult<ConceptUID>>();
         try {
             setupConn();
-            Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
-                    IdType.CUI_IDTYPE, sab));
+            Map<String, List<String>> matches = matches(phrase,
+                    mapToId(phrase, IdType.CUI_IDTYPE, sab));
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
@@ -736,8 +738,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         continue;
                     }
                     String permutedString = StringUtils.join(p, ' ');
-                    matches = (matches(permutedString, mapToId(permutedString,
-                            IdType.CUI_IDTYPE, sab)));
+                    matches = (matches(permutedString,
+                            mapToId(permutedString, IdType.CUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
@@ -770,8 +772,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         Map<String, MapToIdResult<LexicalUID>> result = new HashMap<String, MapToIdResult<LexicalUID>>();
         try {
             setupConn();
-            Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
-                    IdType.LUI_IDTYPE, sab));
+            Map<String, List<String>> matches = matches(phrase,
+                    mapToId(phrase, IdType.LUI_IDTYPE, sab));
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
@@ -788,8 +790,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         continue;
                     }
                     String permutedString = StringUtils.join(p, ' ');
-                    matches = (matches(permutedString, mapToId(permutedString,
-                            IdType.LUI_IDTYPE, sab)));
+                    matches = (matches(permutedString,
+                            mapToId(permutedString, IdType.LUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
@@ -822,8 +824,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         Map<String, MapToIdResult<StringUID>> result = new HashMap<String, MapToIdResult<StringUID>>();
         try {
             setupConn();
-            Map<String, List<String>> matches = matches(phrase, mapToId(phrase,
-                    IdType.CUI_IDTYPE, sab));
+            Map<String, List<String>> matches = matches(phrase,
+                    mapToId(phrase, IdType.CUI_IDTYPE, sab));
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
@@ -840,8 +842,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         continue;
                     }
                     String permutedString = StringUtils.join(p, ' ');
-                    matches = (matches(permutedString, mapToId(permutedString,
-                            IdType.CUI_IDTYPE, sab)));
+                    matches = (matches(permutedString,
+                            mapToId(permutedString, IdType.CUI_IDTYPE, sab)));
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
@@ -931,8 +933,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     "select distinct(PTR), PAUI, ");
             sql.append(auis.get(0).getKeyName());
             sql.append(" from MRHIER where");
-            sql.append(singletonOrSetClause(auis.get(0).getKeyName(), auis
-                    .size()));
+            sql.append(singletonOrSetClause(auis.get(0).getKeyName(),
+                    auis.size()));
             params.addAll(auis);
 
             if (sab != null) {
@@ -987,8 +989,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     "select distinct(PTR), PAUI, ");
             sql.append(cuis.get(0).getKeyName());
             sql.append(" from MRHIER where");
-            sql.append(singletonOrSetClause(cuis.get(0).getKeyName(), cuis
-                    .size()));
+            sql.append(singletonOrSetClause(cuis.get(0).getKeyName(),
+                    cuis.size()));
             params.addAll(cuis);
 
             if (sab != null) {
@@ -1056,8 +1058,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         if (p.asList().get(i).equals(k.asList().get(j))) {
                             return new CommonParent<T>(p.asList().get(i), uid1,
                                     uid2, p.asList().size() - i - 1, k.asList()
-                                            .size()
-                                            - j - 1);
+                                            .size() - j - 1);
                         }
                     }
                 }
@@ -1232,8 +1233,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             ResultSet rs = executeAndLogQuery(query);
             Set<SAB> result = new HashSet<SAB>();
             while (rs.next()) {
-                SAB sab = SAB.withNameAndDescription(rs.getString(1), rs
-                        .getString(2));
+                SAB sab = SAB.withNameAndDescription(rs.getString(1),
+                        rs.getString(2));
                 result.add(sab);
             }
             return result;
@@ -1476,8 +1477,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             setupConn();
             StringBuilder sql = new StringBuilder(
                     "select b.CODE from MRCONSO a, MRCONSO b ");
-            sql
-                    .append("where a.CODE = ? and a.SAB = ? and b.SAB = ? and a.CUI = b.CUI");
+            sql.append("where a.CODE = ? and a.SAB = ? and b.SAB = ? and a.CUI = b.CUI");
             List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
             params.add(queryStr(from.getCode()));
             params.add(from.getSab());
@@ -1487,8 +1487,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     params));
             List<TerminologyCode> result = new ArrayList<TerminologyCode>();
             while (rs.next()) {
-                result.add(TerminologyCode
-                        .fromStringAndSAB(rs.getString(1), to));
+                result.add(TerminologyCode.fromStringAndSAB(rs.getString(1), to));
             }
             return result;
         } catch (SQLException sqle) {
@@ -1505,17 +1504,12 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
         setupConn();
         List<TerminologyCode> childCodes = new ArrayList<TerminologyCode>();
-        ConceptUID cuid = codeToUID(code);
-        if (cuid == null) {
-            throw new UMLSQueryException("No such terminology code: " + code);
-        }
 
-        List<ConceptUID> childCuis = getChildren(codeToUID(code), "", code
-                .getSab());
+        List<ConceptUID> childCuis = getChildren(codeToUID(code), "",
+                code.getSab());
         for (ConceptUID cui : childCuis) {
             childCodes.addAll(uidToCode(cui, code.getSab()));
         }
-
 
         tearDownConn();
 
@@ -1529,11 +1523,11 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
         setupConn();
         List<TerminologyCode> parentCodes = new ArrayList<TerminologyCode>();
-        Map<PTR, AtomUID> parentAuis = getParents(codeToUID(code), "", code
-                .getSab());
+        Map<PTR, AtomUID> parentAuis = getParents(codeToUID(code), "",
+                code.getSab());
         for (AtomUID aui : parentAuis.values()) {
-            for (ConceptUID cui : getCUI(aui, Collections
-                    .<SAB> singletonList(code.getSab()), false)) {
+            for (ConceptUID cui : getCUI(aui,
+                    Collections.<SAB> singletonList(code.getSab()), false)) {
                 parentCodes.addAll(uidToCode(cui, code.getSab()));
             }
         }
@@ -1611,10 +1605,57 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * edu.emory.cci.aiw.umls.UMLSQueryExecutor#getTermSubsumption(edu.emory
+     * .cci.aiw.umls.TerminologyCode)
+     */
+    public List<TerminologyCode> getTermSubsumption(TerminologyCode code)
+            throws UMLSQueryException, UMLSNoSuchTermException {
+        validateCode(code);
+
+        if (!codeExists(code)) {
+            throw new UMLSNoSuchTermException("No such terminology code: "
+                    + code);
+        }
+
+        List<TerminologyCode> result = new ArrayList<TerminologyCode>();
+
+        // stores the unexpanded children
+        Queue<TerminologyCode> descendants = new LinkedList<TerminologyCode>();
+
+        result.add(code);
+        descendants.addAll(getChildrenByCode(code));
+
+        // loop through all children until the queue is empty, like BFS/DFS
+        while (!descendants.isEmpty()) {
+            // dequeue from the descendants and set as current term
+            TerminologyCode current = descendants.remove();
+
+            // add the current child under examination to the result set
+            result.add(current);
+
+            // get all of the current term's children and them to the queue
+            List<TerminologyCode> curChildren = getChildrenByCode(current);
+
+            if (!curChildren.isEmpty()) {
+                descendants.addAll(curChildren);
+            }
+        }
+
+        return result;
+    }
+
     private void validateCode(TerminologyCode code) throws UMLSQueryException {
         if (code == null || code.getCode().equals("") || code.getSab() == null) {
             throw new UMLSQueryException("Code and SAB must not be null");
         }
+    }
+
+    private boolean codeExists(TerminologyCode code) throws UMLSQueryException {
+        return codeToUID(code) != null;
     }
 
     private UMLSQueryStringValue queryStr(String str) {
