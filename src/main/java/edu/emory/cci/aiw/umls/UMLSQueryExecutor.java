@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.org.apache.bcel.internal.classfile.Code;
-import com.sun.org.omg.SendingContext.CodeBase;
-
 /**
  * This is an API for querying a UMLS database. It allows searching for unique
  * identifiers, mapping to identifiers, finding parents, children, and
