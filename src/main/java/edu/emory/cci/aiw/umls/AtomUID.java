@@ -63,7 +63,6 @@ public final class AtomUID extends AbstractUMLSSearchUID implements
 
     @Override
     public String getKeyName() {
-        // TODO Auto-generated method stub
         return "AUI";
     }
 
