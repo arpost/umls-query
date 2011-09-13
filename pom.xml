@@ -36,6 +36,7 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.12</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.arp</groupId>
@@ -81,6 +82,10 @@
                                 <include>**/UMLSDatabaseConnectionTest.java</include>
                             </includes>
                             <skipTests>false</skipTests>
+                            <systemPropertyVariables>
+                                <umls.query.test.tier2.username>${test.tier2.username}</umls.query.test.tier2.username>
+                                <umls.query.test.tier2.password>${test.tier2.password}</umls.query.test.tier2.password>
+                            </systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>

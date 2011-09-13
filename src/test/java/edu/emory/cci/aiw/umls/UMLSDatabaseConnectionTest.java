@@ -38,7 +38,9 @@ public class UMLSDatabaseConnectionTest {
 
     @Before
     public void setUp() throws Exception {
-        String url = "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA", user = "umlsuser", pass = "3SqQgPOh";
+        String user = System.getProperty("umls.query.test.tier2.username");
+        String pass = System.getProperty("umls.query.test.tier2.password");
+        String url = "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA";
         this.conn = UMLSDatabaseConnection.getConnection(
                 DatabaseAPI.DRIVERMANAGER, url, user, pass);
         sabs = new ArrayList<SAB>();
