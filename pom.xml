@@ -8,6 +8,20 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+        <repository>
+                <id>aiw.internal.repo</id>
+                <name>AIW Internal Repo</name>
+                <url>http://maven.cci.emory.edu:8081/nexus/content/repositories/aiw/</url>
+        </repository>
+        <snapshotRepository>
+            <id>aiw.snapshots.internal.repo</id>
+            <name>AIW Internal Snapshots Repo</name>
+            <url>http://maven.cci.emory.edu:8081/nexus/content/repositories/aiw-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
