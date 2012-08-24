@@ -26,9 +26,6 @@ import org.arp.javautil.sql.InvalidConnectionSpecArguments;
  * with the parameters for accessing the database. Additionally, the caller must
  * pass in the database API type. Once an instance has been obtained, any of the
  * queries defined in the {@link UMLSQueryExecutor} interface may be executed.
- * 
- * @author Michel Mansour
- * 
  */
 public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
