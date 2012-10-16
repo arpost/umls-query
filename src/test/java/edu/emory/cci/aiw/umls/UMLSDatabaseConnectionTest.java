@@ -40,7 +40,7 @@ public class UMLSDatabaseConnectionTest {
     public void setUp() throws Exception {
         String user = System.getProperty("umls.query.test.tier2.username");
         String pass = System.getProperty("umls.query.test.tier2.password");
-        String url = "jdbc:mysql://aiwdev02.eushc.org:3307/umls_2010AA";
+        String url = System.getProperty("umls.query.test.tier2.url");
         this.conn = UMLSDatabaseConnection.getConnection(
                 DatabaseAPI.DRIVERMANAGER, url, user, pass);
         sabs = new ArrayList<SAB>();

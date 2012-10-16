@@ -30,7 +30,6 @@ import org.arp.javautil.sql.InvalidConnectionSpecArguments;
 public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
     private Connection conn;
-
     private final DatabaseAPI api;
     private final String url;
     private final String user;
@@ -49,24 +48,20 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     /**
-     * Returns a <code>UMLSDatabaseConnection</code> for querying a UMLS
-     * database. Callers must specify the location and access information for
-     * the database, as well as the database API type.
-     * 
-     * @param api
-     *            the Java database API to use. An instance of the
-     *            {@link DatabaseAPI} enum, which provides the
-     *            {@link java.sql.DriverMananger} and
-     *            {@link javax.sql.DataSource} methods.
-     * @param url
-     *            the location of the database
-     * @param user
-     *            the username to access the database
-     * @param password
-     *            the password that goes with the username to access the
-     *            database
+     * Returns a
+     * <code>UMLSDatabaseConnection</code> for querying a UMLS database. Callers
+     * must specify the location and access information for the database, as
+     * well as the database API type.
+     *
+     * @param api the Java database API to use. An instance of the
+     * {@link DatabaseAPI} enum, which provides the
+     * {@link java.sql.DriverMananger} and {@link javax.sql.DataSource} methods.
+     * @param url the location of the database
+     * @param user the username to access the database
+     * @param password the password that goes with the username to access the
+     * database
      * @return a <code>UMLSDatabaseConnection</code> accessed by the specified
-     *         parameters
+     * parameters
      */
     public static UMLSDatabaseConnection getConnection(DatabaseAPI api,
             String url, String user, String password) {
@@ -87,12 +82,14 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
     }
 
     private void tearDownConn() throws UMLSQueryException {
-        log(Level.FINE, "Attempting to disconnect from the database...");
-        try {
-            conn.close();
-            log(Level.FINE, "Disconnected from database " + url);
-        } catch (SQLException sqle) {
-            throw new UMLSQueryException(sqle);
+        if (conn != null) {
+            log(Level.FINE, "Attempting to disconnect from the database...");
+            try {
+                conn.close();
+                log(Level.FINE, "Disconnected from database " + url);
+            } catch (SQLException sqle) {
+                throw new UMLSQueryException(sqle);
+            }
         }
     }
 
@@ -465,7 +462,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
 
             StringBuilder sql = new StringBuilder(
                     "select distinct(TUI), STY from MRCONSO a, MRSTY b "
-                            + "where a.CUI = b.CUI and a.");
+                    + "where a.CUI = b.CUI and a.");
             sql.append(uid.getKeyName());
             sql.append(" = ?");
 
@@ -670,10 +667,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(
                             entry.getKey(),
-                            MapToIdResult.<AtomUID> fromUidAndStr(AtomUID
-                                    .fromString(entry.getValue().get(0)),
-                                    UMLSQueryStringValue.fromString(entry
-                                            .getValue().get(1))));
+                            MapToIdResult.<AtomUID>fromUidAndStr(AtomUID
+                            .fromString(entry.getValue().get(0)),
+                            UMLSQueryStringValue.fromString(entry
+                            .getValue().get(1))));
                 }
                 return result;
             } else {
@@ -688,10 +685,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
-                                .<AtomUID> fromUidAndStr(AtomUID
-                                        .fromString(entry.getValue().get(0)),
-                                        UMLSQueryStringValue.fromString(entry
-                                                .getValue().get(1))));
+                                .<AtomUID>fromUidAndStr(AtomUID
+                                .fromString(entry.getValue().get(0)),
+                                UMLSQueryStringValue.fromString(entry
+                                .getValue().get(1))));
                     }
                 }
                 return result;
@@ -722,10 +719,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
-                            .<ConceptUID> fromUidAndStr(ConceptUID
-                                    .fromString(entry.getValue().get(0)),
-                                    UMLSQueryStringValue.fromString(entry
-                                            .getValue().get(1))));
+                            .<ConceptUID>fromUidAndStr(ConceptUID
+                            .fromString(entry.getValue().get(0)),
+                            UMLSQueryStringValue.fromString(entry
+                            .getValue().get(1))));
                 }
                 return result;
             } else {
@@ -740,10 +737,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
-                                .<ConceptUID> fromUidAndStr(ConceptUID
-                                        .fromString(entry.getValue().get(0)),
-                                        UMLSQueryStringValue.fromString(entry
-                                                .getValue().get(1))));
+                                .<ConceptUID>fromUidAndStr(ConceptUID
+                                .fromString(entry.getValue().get(0)),
+                                UMLSQueryStringValue.fromString(entry
+                                .getValue().get(1))));
                     }
                 }
                 return result;
@@ -774,10 +771,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
-                            .<LexicalUID> fromUidAndStr(LexicalUID
-                                    .fromString(entry.getValue().get(0)),
-                                    UMLSQueryStringValue.fromString(entry
-                                            .getValue().get(1))));
+                            .<LexicalUID>fromUidAndStr(LexicalUID
+                            .fromString(entry.getValue().get(0)),
+                            UMLSQueryStringValue.fromString(entry
+                            .getValue().get(1))));
                 }
                 return result;
             } else {
@@ -792,10 +789,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
-                                .<LexicalUID> fromUidAndStr(LexicalUID
-                                        .fromString(entry.getValue().get(0)),
-                                        UMLSQueryStringValue.fromString(entry
-                                                .getValue().get(1))));
+                                .<LexicalUID>fromUidAndStr(LexicalUID
+                                .fromString(entry.getValue().get(0)),
+                                UMLSQueryStringValue.fromString(entry
+                                .getValue().get(1))));
                     }
                 }
                 return result;
@@ -826,10 +823,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             if (matches.containsKey(phrase)) {
                 for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
                     result.put(entry.getKey(), MapToIdResult
-                            .<StringUID> fromUidAndStr(StringUID
-                                    .fromString(entry.getValue().get(0)),
-                                    UMLSQueryStringValue.fromString(entry
-                                            .getValue().get(1))));
+                            .<StringUID>fromUidAndStr(StringUID
+                            .fromString(entry.getValue().get(0)),
+                            UMLSQueryStringValue.fromString(entry
+                            .getValue().get(1))));
                 }
                 return result;
             } else {
@@ -844,10 +841,10 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                     for (Map.Entry<String, List<String>> entry : matches
                             .entrySet()) {
                         result.put(entry.getKey(), MapToIdResult
-                                .<StringUID> fromUidAndStr(StringUID
-                                        .fromString(entry.getValue().get(0)),
-                                        UMLSQueryStringValue.fromString(entry
-                                                .getValue().get(1))));
+                                .<StringUID>fromUidAndStr(StringUID
+                                .fromString(entry.getValue().get(0)),
+                                UMLSQueryStringValue.fromString(entry
+                                .getValue().get(1))));
                     }
                 }
                 return result;
@@ -1032,7 +1029,6 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             Comparator<AtomUID> c = new UMLSUIDComparator<AtomUID>();
             return o1.compareTo(o2);
         }
-
     }
 
     @Override
@@ -1055,7 +1051,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                         if (p.asList().get(i).equals(k.asList().get(j))) {
                             return new CommonParent<T>(p.asList().get(i), uid1,
                                     uid2, p.asList().size() - i - 1, k.asList()
-                                            .size() - j - 1);
+                                    .size() - j - 1);
                         }
                     }
                 }
@@ -1347,7 +1343,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             setupConn();
             StringBuilder sql = new StringBuilder(
                     "select  distinct(CUI2) from MRREL where "
-                            + ui.getKeyName() + " = ?");
+                    + ui.getKeyName() + " = ?");
             params.add(ui);
             if (sab != null) {
                 sql.append(" and SAB = ?");
@@ -1524,7 +1520,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
                 code.getSab());
         for (AtomUID aui : parentAuis.values()) {
             for (ConceptUID cui : getCUI(aui,
-                    Collections.<SAB> singletonList(code.getSab()), false)) {
+                    Collections.<SAB>singletonList(code.getSab()), false)) {
                 parentCodes.addAll(uidToCode(cui, code.getSab()));
             }
         }
@@ -1549,8 +1545,8 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
             String result = "";
             String sql = new String(
                     "select MRCONSO.STR from MRRANK, MRCONSO where "
-                            + "MRRANK.TTY = MRCONSO.TTY and MRRANK.SAB = MRCONSO.SAB and "
-                            + "MRCONSO.CODE = ? and MRCONSO.SAB = ? having max(MRRANK.RANK)");
+                    + "MRRANK.TTY = MRCONSO.TTY and MRRANK.SAB = MRCONSO.SAB and "
+                    + "MRCONSO.CODE = ? and MRCONSO.SAB = ? having max(MRRANK.RANK)");
             List<UMLSQuerySearchUID> params = new ArrayList<UMLSQuerySearchUID>();
             params.add(queryStr(code.getCode()));
             params.add(code.getSab());
