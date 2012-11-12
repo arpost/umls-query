@@ -1,0 +1,48 @@
+UMLSQuery 1.0.1 -- A Java library for querying a UMLS MySQL
+installation.  Center for Comprehensive Informatics, Emory University
+
+OVERVIEW
+
+The UMLSQuery library allows you to connect to a MySQL UMLS
+installation and run common queries.
+
+WHAT'S NEW
+
+Version 1.0.1 is the first externally available version.
+
+REQUIREMENTS
+
+The current version is known to work with Oracle Java 6. It is
+expected to work with OpenJDK 6 as well. It has not been tested with
+Java 7.
+
+This package uses the Maven build system, available from
+http://maven.apache.org. You must install maven, if you do not already
+have it, to work with the source code. We use Maven 3.
+
+INSTALLATION
+
+The easiest way to get UMLSQuery is using Maven. It is available from
+the http://maven.cci.emory.edu:8081 repository. Use the following
+dependency declaration:
+
+<dependency> <groupId>umlsquery</groupId>
+    <artifactId>umls-query</artifactId> <version>1.0.1</version>
+    </dependency>
+
+It is also available in tarball and zip file formats from
+http://aiw.sourceforge.net/dev/umls-query-1.0.1. Put
+umls-query-1.0.1.jar on your classpath to use.
+
+LICENSING
+
+UMLSQuery is freely available as open source under the Apache License,
+Version 2.0. A copy of the license is in the LICENSE file provided in
+this distribution.
+
+UMLSQuery is Copyright (C) 2012 Emory University.
+
+FOR MORE INFORMATION
+
+Please see http://aiw.sourceforge.net/dev/umls-query-1.0.1 for
+technical documentation and more information.

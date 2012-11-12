@@ -3,13 +3,48 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>umlsquery</groupId>
     <artifactId>umls-query</artifactId>
-    <version>1.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>UMLSQuery</name>
+    <url>http://aiw.sourceforge.net</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
+    
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.5.1</version>
+            </plugin>
+			
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
+            </plugin>
+			
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <distributionManagement>
+        <site>
+            <id>aiw.sourceforge.net</id>
+            <url>scp://shell.sourceforge.net/home/project-web/aiw/htdocs/dev/${project.build.finalName}</url>
+        </site>
         <repository>
             <id>aiw.internal.repo</id>
             <name>AIW Internal Repo</name>
@@ -21,11 +56,194 @@
             <url>http://maven.cci.emory.edu:8081/nexus/content/repositories/aiw-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+    
+    <repositories>
+        <repository>
+            <id>oracle-repo</id>
+            <name>Oracle Repository</name>
+            <url>http://download.oracle.com/maven</url>
+        </repository>
+    </repositories>
+    
+    <developers>
+        <developer>
+            <id>arpost</id>
+            <name>Andrew Post</name>
+            <email>arpost@emory.edu</email>
+            <roles>
+                <role>Faculty Project Lead</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>hrathod</id>
+            <name>Himanshu Rathod</name>
+            <email>Himanshu.Rathod@emory.edu</email>
+            <roles>
+                <role>Software Developer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>mmansour</id>
+            <name>Michel Mansour</name>
+            <email>mmansour@emory.edu</email>
+            <roles>
+                <role>Software Developer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>wtorian</id>
+            <name>Mike Torian</name>
+            <email>william.m.torian@emory.edu</email>
+            <roles>
+                <role>Data Warehouse Engineer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>mbrow2</id>
+            <name>Michael Brown</name>
+            <email>mbrow2@emory.edu</email>
+            <roles>
+                <role>Software Engineer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>sagravat</id>
+            <name>Sanjay Agravat</name>
+            <email>sagrava@emory.edu</email>
+            <roles>
+                <role>Software Developer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>gsmilto</id>
+            <name>Geoff Milton</name>
+            <email>gsmilto@emory.edu</email>
+            <roles>
+                <role>Software Developer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>ssturm2</id>
+            <name>Zanna Sturm</name>
+            <email>ssturm2@emory.edu</email>
+            <roles>
+                <role>User Interface Designer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>akalsan</id>
+            <name>Akshatha Kalsanka Pai</name>
+            <email>akalsan@emory.edu</email>
+            <roles>
+                <role>Software Developer</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+        <developer>
+            <id>richard.willard</id>
+            <name>Richie Willard</name>
+            <email>richard.willard@emoryhealthcare.org</email>
+            <roles>
+                <role>Project Manager</role>
+            </roles>
+            <organization>Center for Comprehensive Informatics, Emory
+                University
+            </organization>
+        </developer>
+    </developers>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.0</version>
+                <configuration>
+                    <licenseName>apache_v2</licenseName>
+                    <verbose>false</verbose>
+                    <organizationName>Emory University</organizationName>
+                    <inceptionYear>2012</inceptionYear>
+                    <canUpdateDescription>false</canUpdateDescription>
+                    <roots>
+                        <root>src/main</root>
+                        <root>src/test/java/</root>
+                    </roots>
+                    <extraExtensions>
+                        <!-- .xsd files are not supported by default -->
+                        <!-- but should be commented in XML style -->
+                        <xsd>xml</xsd>
+                    </extraExtensions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>first</id>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>maven-notice-plugin</artifactId>
+                <version>1.0.5</version>
+                <configuration>
+                    <noticeTemplate>etc/NOTICE.template</noticeTemplate>
+                    <licenseMapping>
+                        <param>etc/license-mappings.xml</param>
+                    </licenseMapping>
+                </configuration>
+                <executions>
+                    <execution>	
+                        <id>checkontest</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>test</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.1</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>2.2</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -80,6 +298,25 @@
                     </execution>
                 </executions>
             </plugin>
+						<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>assembly/src.xml</descriptor>
+                        <descriptor>assembly/bin.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -92,7 +329,7 @@
         <dependency>
             <groupId>org.arp</groupId>
             <artifactId>javautil</artifactId>
-            <version>2.0-SNAPSHOT</version>
+            <version>2.0.5-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
