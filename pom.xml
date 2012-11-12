@@ -9,6 +9,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+		<scm>
+        <connection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
+        </connection>
+        <url>https://scm.cci.emory.edu/svn/aiw/trunk/umls-query</url>
+    </scm>
     
     <licenses>
         <license>
