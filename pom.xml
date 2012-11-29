@@ -229,9 +229,6 @@
                 <version>1.0.5</version>
                 <configuration>
                     <noticeTemplate>etc/NOTICE.template</noticeTemplate>
-                    <licenseMapping>
-                        <param>etc/license-mappings.xml</param>
-                    </licenseMapping>
                 </configuration>
                 <executions>
                     <execution>	
