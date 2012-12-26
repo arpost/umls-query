@@ -11,8 +11,8 @@
     </properties>
 
 		<scm>
-        <connection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
-        </connection>
+        <developerConnection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
+        </developerConnection>
         <url>https://scm.cci.emory.edu/svn/aiw/trunk/umls-query</url>
     </scm>
     
