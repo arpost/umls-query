@@ -5,12 +5,19 @@
     <artifactId>umls-query</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <name>UMLSQuery</name>
+    <description>The UMLSQuery library allows you to connect to a MySQL UMLS
+        installation and run common queries.
+    </description>
+    <organization>
+        <name>Emory University</name>
+        <url>http://www.emory.edu</url>
+    </organization>
     <url>http://aiw.sourceforge.net/dev/${project.build.finalName}</url>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-		<scm>
+    <scm>
         <developerConnection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
         </developerConnection>
         <url>https://scm.cci.emory.edu/svn/aiw/trunk/umls-query</url>
@@ -306,7 +313,7 @@
                     </execution>
                 </executions>
             </plugin>
-						<plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2.1</version>

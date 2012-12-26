@@ -26,9 +26,11 @@ The easiest way to get UMLSQuery is using Maven. It is available from
 the http://maven.cci.emory.edu:8081 repository. Use the following
 dependency declaration:
 
-<dependency> <groupId>umlsquery</groupId>
-    <artifactId>umls-query</artifactId> <version>1.0.1</version>
-    </dependency>
+<dependency> 
+    <groupId>umlsquery</groupId>
+    <artifactId>umls-query</artifactId>
+    <version>1.0.1</version>
+</dependency>
 
 It is also available in tarball and zip file formats from
 http://aiw.sourceforge.net/dev/umls-query-1.0.1. Put
