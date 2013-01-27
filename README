@@ -9,7 +9,8 @@ installation and run common queries.
 WHAT'S NEW
 
 Version 1.0.2 is contains no code changes. We moved the
-package to our new public Maven repository (see below).
+package to our new public Maven repository (see below). We updated our 
+dependency on JavaUtil to the latest release.
 
 REQUIREMENTS
 
