@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>umlsquery</groupId>
     <artifactId>umls-query</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>UMLSQuery</name>
     <description>The UMLSQuery library allows you to connect to a MySQL UMLS
         installation and run common queries.
@@ -18,9 +18,9 @@
     </properties>
 
     <scm>
-        <developerConnection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
+        <developerConnection>scm:svn:https://scm.cci.emory.edu/svn/aiw/tags/umls-query-1.0.2
         </developerConnection>
-        <url>https://scm.cci.emory.edu/svn/aiw/trunk/umls-query</url>
+        <url>https://scm.cci.emory.edu/svn/aiw/tags/umls-query-1.0.2</url>
     </scm>
     
     <licenses>
