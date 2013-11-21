@@ -14,8 +14,8 @@ dependency on JavaUtil to the latest release.
 
 REQUIREMENTS
 
-The current version is known to work with Oracle Java 6 and 7. It is
-expected to work with OpenJDK 6 and 7 as well.
+The current version is known to work with Oracle Java 7. It is
+expected to work with OpenJDK 7 as well.
 
 This package uses the Maven build system, available from
 http://maven.apache.org. You must install maven, if you do not already
