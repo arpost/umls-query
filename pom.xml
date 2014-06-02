@@ -19,9 +19,8 @@
     </properties>
 
     <scm>
-        <developerConnection>scm:svn:https://scm.cci.emory.edu/svn/aiw/trunk/umls-query
-        </developerConnection>
-        <url>https://scm.cci.emory.edu/svn/aiw/trunk/umls-query</url>
+		<developerConnection>scm:git:ssh://git.cci.emory.edu/opt/git/aiw/umls-query.git</developerConnection>
+		<tag>HEAD</tag>
     </scm>
 
     <licenses>
