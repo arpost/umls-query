@@ -1,216 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>umlsquery</groupId>
+    <groupId>org.eurekaclinical</groupId>
     <artifactId>umls-query</artifactId>
     <version>1.0.3-SNAPSHOT</version>
     <name>UMLSQuery</name>
     <description>The UMLSQuery library allows you to connect to a MySQL UMLS
         installation and run common queries.
     </description>
-        <inceptionYear>2012</inceptionYear>
-    <organization>
-        <name>Emory University</name>
-        <url>http://www.emory.edu</url>
-    </organization>
-    <url>http://aiw.sourceforge.net/dev/${project.build.finalName}</url>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+    <inceptionYear>2012</inceptionYear>
+    <parent>
+        <groupId>org.eurekaclinical</groupId>
+        <artifactId>eurekaclinical-parent</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+    <url>https://github.com/eurekaclinical/umls-query.git</url>
 
     <scm>
-		<developerConnection>scm:git:ssh://git.cci.emory.edu/opt/git/aiw/umls-query.git</developerConnection>
-		<tag>HEAD</tag>
+        <connection>scm:git:https://github.com/eurekaclinical/umls-query.git</connection>
+        <developerConnection>scm:git:https://github.com/eurekaclinical/umls-query.git</developerConnection>
+        <url>https://github.com/eurekaclinical/umls-query.git</url>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
-            <distribution>manual</distribution>
+            <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <distributionManagement>
-        <site>
-            <id>aiw.sourceforge.net</id>
-            <url>scp://shell.sourceforge.net/home/project-web/aiw/htdocs/dev/${project.build.finalName}</url>
-        </site>
-        <repository>
-            <id>aiw</id>
-            <name>AIW Repo</name>
-            <url>http://maven.cci.emory.edu/nexus/content/repositories/aiw/</url>
-        </repository>
-        <snapshotRepository>
-            <id>aiw-snapshots</id>
-            <name>AIW Snapshots Repo</name>
-            <url>http://maven.cci.emory.edu/nexus/content/repositories/aiw-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <repositories>
-        <repository>
-            <id>maven.cci</id>
-            <name>BMI Maven Repository</name>
-            <url>http://maven.cci.emory.edu/nexus/content/repositories/public</url>
-        </repository>
-        <repository>
-            <id>aiw</id>
-            <name>AIW Release Repository</name>
-            <url>http://maven.cci.emory.edu/nexus/content/repositories/aiw/</url>
-        </repository>
-    </repositories>
-
-    <developers>
-        <developer>
-            <id>arpost</id>
-            <name>Andrew Post</name>
-            <email>arpost@emory.edu</email>
-            <roles>
-                <role>Faculty Project Lead</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>hrathod</id>
-            <name>Himanshu Rathod</name>
-            <email>himanshu.rathod@emory.edu</email>
-            <roles>
-                <role>Software Developer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>mmansour</id>
-            <name>Michel Mansour</name>
-            <email>michel.mansour@emory.edu</email>
-            <roles>
-                <role>Software Developer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>wtorian</id>
-            <name>Mike Torian</name>
-            <email>william.m.torian@emory.edu</email>
-            <roles>
-                <role>Data Warehouse Engineer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>mbrow2</id>
-            <name>Michael Brown</name>
-            <email>mbrow2@emory.edu</email>
-            <roles>
-                <role>Software Engineer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>sagravat</id>
-            <name>Sanjay Agravat</name>
-            <email>sagrava@emory.edu</email>
-            <roles>
-                <role>Software Developer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>gsmilto</id>
-            <name>Geoff Milton</name>
-            <email>gsmilto@emory.edu</email>
-            <roles>
-                <role>Software Developer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>ssturm2</id>
-            <name>Zanna Sturm</name>
-            <email>ssturm2@emory.edu</email>
-            <roles>
-                <role>User Interface Designer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>akalsan</id>
-            <name>Akshatha Kalsanka Pai</name>
-            <email>akalsan@emory.edu</email>
-            <roles>
-                <role>Software Developer</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-        <developer>
-            <id>richard.willard</id>
-            <name>Richie Willard</name>
-            <email>richard.willard@emoryhealthcare.org</email>
-            <roles>
-                <role>Project Manager</role>
-            </roles>
-            <organization>Department of Biomedical Informatics, Emory
-                University
-            </organization>
-        </developer>
-    </developers>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin
-                </artifactId>
-                <version>2.7</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
-                <configuration>
-                    <aggregate>true</aggregate>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin
-                </artifactId>
-                <version>2.16</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <configLocation>http://aiw.sourceforge.net/dev/aiw-checkstyle-1.0/protempa-checkstyle.xml</configLocation>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
@@ -219,7 +38,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>license-maven-plugin</artifactId>
-                <version>1.5</version>
                 <configuration>
                     <licenseName>apache_v2</licenseName>
                     <roots>
@@ -232,58 +50,17 @@
                         <xsd>xml</xsd>
                     </extraExtensions>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>first</id>
-                        <goals>
-                            <goal>update-file-header</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jasig.maven</groupId>
                 <artifactId>maven-notice-plugin</artifactId>
-                <version>1.0.5</version>
                 <configuration>
                     <noticeTemplate>etc/NOTICE.template</noticeTemplate>
-                </configuration>
-                <executions>
-                    <execution>	
-                        <id>checkontest</id>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <phase>test</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.3</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.wagon</groupId>
-                        <artifactId>wagon-ssh</artifactId>
-                        <version>2.5</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.7.1</version>
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
@@ -291,7 +68,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <excludes>
                         <exclude>logging.properties</exclude>
@@ -300,50 +76,13 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <descriptors>
                         <descriptor>assembly/src.xml</descriptor>
                         <descriptor>assembly/bin.xml</descriptor>
                     </descriptors>
-                    <tarLongFileMode>gnu</tarLongFileMode>
                 </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -351,26 +90,23 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.arp</groupId>
             <artifactId>javautil</artifactId>
-            <version>2.4-SNAPSHOT</version>
+            <version>3.0-Alpha-2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
     </dependencies>
     <profiles>
