@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.eurekaclinical</groupId>
         <artifactId>eurekaclinical-parent</artifactId>
-        <version>1-SNAPSHOT</version>
+        <version>1-Alpha-4</version>
     </parent>
     <url>https://github.com/eurekaclinical/umls-query.git</url>
 
@@ -93,9 +93,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.arp</groupId>
+            <groupId>org.eurekaclinical</groupId>
             <artifactId>javautil</artifactId>
-            <version>3.0-Alpha-2</version>
+            <version>3.0-Alpha-4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
