@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.eurekaclinical</groupId>
     <artifactId>umls-query</artifactId>
-    <version>2.0-Alpha-1</version>
+    <version>2.0-Alpha-2-SNAPSHOT</version>
     <name>UMLSQuery</name>
     <description>The UMLSQuery library allows you to connect to a MySQL UMLS
         installation and run common queries.
@@ -20,7 +20,7 @@
         <connection>scm:git:https://github.com/eurekaclinical/umls-query.git</connection>
         <developerConnection>scm:git:https://github.com/eurekaclinical/umls-query.git</developerConnection>
         <url>https://github.com/eurekaclinical/umls-query.git</url>
-        <tag>umls-query-2.0-Alpha-1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <licenses>
