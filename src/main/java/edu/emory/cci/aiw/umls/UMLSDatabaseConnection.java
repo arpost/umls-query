@@ -74,7 +74,7 @@ public class UMLSDatabaseConnection implements UMLSQueryExecutor {
      *
      * @param api the Java database API to use. An instance of the
      * {@link DatabaseAPI} enum, which provides the
-     * {@link java.sql.DriverMananger} and {@link javax.sql.DataSource} methods.
+     * {@link java.sql.DriverManager} and {@link javax.sql.DataSource} methods.
      * @param url the location of the database
      * @param user the username to access the database
      * @param password the password that goes with the username to access the

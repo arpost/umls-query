@@ -256,7 +256,7 @@ public interface UMLSQueryExecutor {
      * First, an exact match search is performed on the phrase. If no match is
      * found, exact match searches are done on all permutations of all lengths
      * of the phrase. Note: This is an O(n!) operation, where n is the number of
-     * words in the search phrase. For large n (n > ~10), it may take a while to
+     * words in the search phrase. For large n (n &gt; ~10), it may take a while to
      * complete; for very large n, the operation may never complete. The search
      * can be optionally restricted by SAB dictionary.
      * 
@@ -283,7 +283,7 @@ public interface UMLSQueryExecutor {
      * First, an exact match search is performed on the phrase. If no match is
      * found, exact match searches are done on all permutations of all lengths
      * of the phrase. Note: This is an O(n!) operation, where n is the number of
-     * words in the search phrase. For large n (n > ~10), it may take a while to
+     * words in the search phrase. For large n (n &gt; ~10), it may take a while to
      * complete; for very large n, the operation may never complete. The search
      * can be optionally restricted by SAB dictionary.
      * 
@@ -310,7 +310,7 @@ public interface UMLSQueryExecutor {
      * First, an exact match search is performed on the phrase. If no match is
      * found, exact match searches are done on all permutations of all lengths
      * of the phrase. Note: This is an O(n!) operation, where n is the number of
-     * words in the search phrase. For large n (n > ~10), it may take a while to
+     * words in the search phrase. For large n (n &gt; ~10), it may take a while to
      * complete; for very large n, the operation may never complete. The search
      * can be optionally restricted by SAB dictionary.
      * 
@@ -337,7 +337,7 @@ public interface UMLSQueryExecutor {
      * First, an exact match search is performed on the phrase. If no match is
      * found, exact match searches are done on all permutations of all lengths
      * of the phrase. Note: This is an O(n!) operation, where n is the number of
-     * words in the search phrase. For large n (n > ~10), it may take a while to
+     * words in the search phrase. For large n (n &gt; ~10), it may take a while to
      * complete; for very large n, the operation may never complete. The search
      * can be optionally restricted by SAB dictionary.
      * 
@@ -585,7 +585,7 @@ public interface UMLSQueryExecutor {
      *            otherwise, all relationships are considered
      * @param maxR
      *            the maximum radius to consider when searching for
-     *            <tt>cui2</tt>. If this value is <= 0, then the default value
+     *            <tt>cui2</tt>. If this value is &lt;= 0, then the default value
      *            of 3 is used.
      * @return the distance from <tt>cui1</tt> to <tt>cui2</tt>
      * @throws UMLSQueryException
@@ -607,7 +607,7 @@ public interface UMLSQueryExecutor {
      * @param sab
      *            if not null, the dictionary to restrict the search to;
      *            otherwise, all relationships are considered
-     * @param rel
+     * @param rel a relationship to restrict the search.
      * @return a list of CUIs that are the neighbors of the given CUI or AUI
      * @throws UMLSQueryException
      *             if something goes wrong during the query execution
